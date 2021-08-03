@@ -1,70 +1,24 @@
-import { Link, RouteComponentProps } from '@reach/router'
-import { useForm } from 'react-hook-form'
-import * as yup from 'yup'
-import Button from '../components/Button'
-import FormInput from '../components/FormInput'
-import useYupValidationResolver from '../hooks/useYupValidationResolver'
-
-const SignupSchema = yup.object({
-	username: yup.string().required('Username is required'),
-	email: yup.string().required('Email is required').email('Email is Invalid'),
-	password: yup
-		.string()
-		.required('Password us required')
-		.min(5, 'Password must be longer than 5 characters'),
-})
-
-type FormData = yup.InferType<typeof SignupSchema>
+import { Link, RouteComponentProps, useNavigate } from '@reach/router'
+import { useEffect } from 'react'
+import SignupForm from '../components/AuthForm/SignupForm'
+import { useAuth } from '../context/AuthContext'
 
 const Signup = (props: RouteComponentProps) => {
-	const resolver = useYupValidationResolver(SignupSchema)
+	const { session } = useAuth()
 
-	const {
-		handleSubmit,
-		register,
+	const navigate = useNavigate()
 
-		formState: { errors, touchedFields, isSubmitted,  },
-	} = useForm<FormData>({
-		resolver,
-	})
-	const onSubmit = (data: FormData) => {
-		console.log(data)
-	}
+	useEffect(() => {
+		if (session) {
+			navigate('/')
+		}
+	}, [session, navigate])
 
 	return (
 		<div className='min-h-screen'>
 			<div className='pt-20'>
 				<h1 className='text-4xl font-bold text-center px-2 mb-12'>SIGNUP</h1>
-				<form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-6'>
-					<div className='flex flex-col items-stretch gap-2 px-6'>
-						<FormInput
-							placeholder='Enter your username'
-							label='Username'
-							error={errors.username?.message}
-							
-							{...register('username')}
-						/>
-						<FormInput
-							placeholder='Enter your email'
-							label='Email'
-							type='email'
-							error={errors.email?.message}
-						
-							{...register('email')}
-						/>
-						<FormInput
-							placeholder='Enter your password'
-							label='Password'
-							type='password'
-							error={errors.password?.message}
-						
-							{...register('password')}
-						/>
-					</div>
-					<div className='flex justify-center px-6 '>
-						<Button>SIGNUP</Button>
-					</div>
-				</form>
+				<SignupForm />
 			</div>
 			<div className='mt-16 flex flex-col items-center text-sm text-text-2'>
 				<p>Have an account?</p>

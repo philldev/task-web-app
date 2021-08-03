@@ -1,5 +1,6 @@
 import { Router } from '@reach/router'
 import { useEffect, useState } from 'react'
+import { UserProvider } from './context/UserContext'
 import { Dashboard, Login, Profile, Signup, Splash } from './screens'
 
 export const App = () => {
@@ -7,8 +8,6 @@ export const App = () => {
 
 	useEffect(() => {
 		let mounted = true
-
-		setIsLoading(true)
 
 		setTimeout(() => {
 			if (mounted) {
@@ -26,12 +25,14 @@ export const App = () => {
 			{isLoading ? (
 				<Splash />
 			) : (
-				<Router className='min-h-screen'>
-					<Dashboard path='/' />
-					<Login path='/login' />
-					<Signup path='/signup' />
-					<Profile path='/profile' />
-				</Router>
+				<UserProvider>
+					<Router className='min-h-screen'>
+						<Dashboard path='/' />
+						<Profile path='/profile' />
+						<Signup path='/signup' />
+						<Login path='/login' />
+					</Router>
+				</UserProvider>
 			)}
 		</div>
 	)

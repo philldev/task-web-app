@@ -2,9 +2,11 @@ import { FC } from 'react'
 
 interface Props {
 	size: 'xs' | 'sm' | 'base' | 'md' | 'lg'
+	color?: 'primary' | 'secondary'
+	className?: string
 }
 
-const Spinner: FC<Props> = ({ size }) => {
+const Spinner: FC<Props> = ({ size, color = 'primary', className }) => {
 	const sizeClassName = {
 		xs: 'h-5 w-5',
 		sm: 'h-6 w-6',
@@ -12,9 +14,16 @@ const Spinner: FC<Props> = ({ size }) => {
 		md: 'h-9 w-9',
 		lg: 'h-11 w-11',
 	}
+
+	const colorClassName = {
+		primary: 'text-accent-primary',
+		secondary: 'text-text-button',
+	}
 	return (
 		<svg
-			className={`animate-spin ${sizeClassName[size]} text-accent-primary`}
+			className={`animate-spin ${sizeClassName[size]} ${
+				colorClassName[color]
+			} ${className ?? ''}`}
 			fill='none'
 			viewBox='0 0 24 24'
 		>

@@ -1,9 +1,25 @@
-import { RouteComponentProps } from '@reach/router'
+import { RouteComponentProps, useNavigate } from '@reach/router'
+import { useEffect } from 'react'
 import Button from '../components/Button'
 import FormInput from '../components/FormInput'
 import Navbar from '../components/Navbar'
+import { useAuth } from '../context/AuthContext'
+import supabase from '../supabase'
 
 const Profile = (props: RouteComponentProps) => {
+	const { session } = useAuth()
+	const navigate = useNavigate()
+	
+	useEffect(() => {
+		if (!session) {
+			navigate('/login')
+		}
+	}, [session, navigate])
+
+	const logout = async () => {
+		await supabase.auth.signOut()
+	}
+
 	return (
 		<div className='flex flex-col min-h-screen'>
 			<Navbar
@@ -61,7 +77,9 @@ const Profile = (props: RouteComponentProps) => {
 						<button className='text-base font-bold underline text-accent-primary'>
 							Change Password
 						</button>
-						<button className='text-base font-bold underline'>Logout</button>
+						<button className='text-base font-bold underline' onClick={logout}>
+							Logout
+						</button>
 					</div>
 				</div>
 				<div className='absolute bottom-0 p-6 w-full left-0 border-border-1 border-t'>

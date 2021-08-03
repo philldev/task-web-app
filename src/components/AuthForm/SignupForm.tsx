@@ -1,0 +1,121 @@
+import { useForm } from 'react-hook-form'
+import * as yup from 'yup'
+import Button from '../Button'
+import FormInput from '../FormInput'
+import useYupValidationResolver from '../../hooks/useYupValidationResolver'
+import supabase from '../../supabase'
+import { useState } from 'react'
+import Spinner from '../Spinner'
+
+const SignupSchema = yup.object({
+	username: yup.string().required('Username is required'),
+	email: yup.string().required('Email is required').email('Email is Invalid'),
+	password: yup
+		.string()
+		.required('Password us required')
+		.min(5, 'Password must be longer than 5 characters'),
+})
+
+type FormData = yup.InferType<typeof SignupSchema>
+
+type StatusState = 'loading' | 'idle' | 'success' | 'error'
+
+const SignupForm = () => {
+	const resolver = useYupValidationResolver(SignupSchema)
+
+	const [status, setStatus] = useState<StatusState>('idle')
+
+	const {
+		handleSubmit,
+		register,
+
+		formState: { errors },
+	} = useForm<FormData>({
+		resolver,
+	})
+	const onSubmit = async (formData: FormData) => {
+		if (status !== 'loading') {
+			setStatus('loading')
+			const { data, error } = await supabase.auth.signUp({
+				email: formData.email,
+				password: formData.password,
+			})
+
+			if (error) {
+				setStatus('error')
+				console.log(error.message)
+			}
+
+			if (data) {
+				setStatus('success')
+			}
+		}
+	}
+
+	return (
+		<>
+			{status === 'success' && <SuccessInfo />}
+			<form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-6'>
+				<div className='flex flex-col items-stretch gap-2 px-6'>
+					<FormInput
+						placeholder='Enter your username'
+						label='Username'
+						error={errors.username?.message}
+						{...register('username')}
+					/>
+					<FormInput
+						placeholder='Enter your email'
+						label='Email'
+						type='email'
+						error={errors.email?.message}
+						{...register('email')}
+					/>
+					<FormInput
+						placeholder='Enter your password'
+						label='Password'
+						type='password'
+						error={errors.password?.message}
+						{...register('password')}
+					/>
+				</div>
+				<div className='flex justify-center px-6 '>
+					<Button>
+						{status === 'loading' && (
+							<Spinner size='xs' color='secondary' className='mr-2' />
+						)}{' '}
+						SIGNUP
+					</Button>
+				</div>
+			</form>
+		</>
+	)
+}
+
+const SuccessInfo = () => {
+	return (
+		<div className='px-6 mb-4'>
+			<div className='bg-bg-success rounded-lg text-accent-success p-2 text-center flex flex-col items-center'>
+				<svg
+					xmlns='http://www.w3.org/2000/svg'
+					className='h-10 w-10 mb-2'
+					fill='none'
+					viewBox='0 0 24 24'
+					stroke='currentColor'
+				>
+					<path
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						strokeWidth={2}
+						d='M5 13l4 4L19 7'
+					/>
+				</svg>
+				<p>
+					You are Successfully Signed up! <br /> please check your{' '}
+					<strong className='underline'>email</strong> to confirm your account!
+				</p>
+			</div>
+		</div>
+	)
+}
+
+export default SignupForm

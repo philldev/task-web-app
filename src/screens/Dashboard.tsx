@@ -6,9 +6,11 @@ import IconButton from '../components/IconButton'
 import Modal from '../components/Modal'
 import Navbar from '../components/Navbar'
 import TaskItem from '../components/TaskItem'
+import { useToast } from '../context/ToastContext'
 
 const Dashboard = (props: RouteComponentProps) => {
 	const [isOpen, setIsOpen] = useState(false)
+	const { dispatch } = useToast()
 	return (
 		<div className='flex flex-col min-h-screen'>
 			<Navbar
@@ -65,7 +67,17 @@ const Dashboard = (props: RouteComponentProps) => {
 						<TaskItem />
 					</div>
 					<IconButton
-						onClick={() => setIsOpen(true)}
+						onClick={() => {
+							setIsOpen(true)
+							dispatch({
+								TYPE: 'SUCCESS',
+								PAYLOAD: {
+									autoCloseInterval: 1000,
+									message: 'test',
+									type: 'SUCCESS',
+								},
+							})
+						}}
 						className='absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2'
 					>
 						<svg

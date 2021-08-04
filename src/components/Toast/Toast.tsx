@@ -29,18 +29,52 @@ const ToastAlert: FC<Props> = ({ toast }) => {
 	}
 
 	return (
-		<div className={` w-full rounded-md border flex ${typeStyle[type]}`}>
-			<p className='flex-1'>{message}</p>
+		<div className={`w-full rounded-xl items-center border flex pl-4 pr-2 py-1 shadow-2xl  ${typeStyle[type]}`}>
+			<p className='flex-1 text-sm font-bold'>{message}</p>
 			{type === 'SUCCESS' ? (
-				<svg width='20px' height='20px' viewBox='0 0 36 36'>
+				<svg
+					xmlns='http://www.w3.org/2000/svg'
+					className='h-6 w-6 text-accent-success'
+					fill='none'
+					viewBox='0 0 24 24'
+					stroke='currentColor'
+				>
 					<path
-						className='clr-i-solid clr-i-solid-path-1'
-						d='M18 2a16 16 0 1 0 16 16A16 16 0 0 0 18 2zm10.45 10.63L15.31 25.76L7.55 18a1.4 1.4 0 0 1 2-2l5.78 5.78l11.14-11.13a1.4 1.4 0 1 1 2 2z'
-					></path>
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						strokeWidth={2}
+						d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+					/>
+				</svg>
+			) : type === 'ERROR' ? (
+				<svg
+					xmlns='http://www.w3.org/2000/svg'
+					className='h-6 w-6 text-accent-danger'
+					fill='none'
+					viewBox='0 0 24 24'
+					stroke='currentColor'
+				>
+					<path
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						strokeWidth={2}
+						d='M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
+					/>
 				</svg>
 			) : (
-				<svg width='20px' height='20px' viewBox='0 0 24 24'>
-					<path d='M13 13h-2V7h2m0 10h-2v-2h2M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2z'></path>
+				<svg
+					xmlns='http://www.w3.org/2000/svg'
+					className='h-6 w-6 text-accent-warning'
+					fill='none'
+					viewBox='0 0 24 24'
+					stroke='currentColor'
+				>
+					<path
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						strokeWidth={2}
+						d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+					/>
 				</svg>
 			)}
 		</div>

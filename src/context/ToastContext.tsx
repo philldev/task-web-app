@@ -6,9 +6,9 @@ export type ToastType = 'SUCCESS' | 'ERROR' | 'WARNING'
 
 export type Toast = {
 	type: ToastType
-	id: string
+	id?: string
 	message: string
-	autoCloseInterval : number
+	autoCloseInterval?: number
 }
 
 type Action =

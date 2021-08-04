@@ -19,10 +19,9 @@ type FormData = yup.InferType<typeof LoginSchema>
 type StatusState = 'loading' | 'idle' | 'success' | 'error'
 
 const LoginForm: FC = () => {
-	const resolver = useYupValidationResolver(LoginSchema)
-
 	const [status, setStatus] = useState<StatusState>('idle')
-
+	const [errorMsg, setErrorMsg] = useState<string | null>(null)
+	const resolver = useYupValidationResolver(LoginSchema)
 	const {
 		handleSubmit,
 		register,
@@ -38,6 +37,7 @@ const LoginForm: FC = () => {
 			let { data, error } = await supabase.auth.signIn({ email, password })
 			if (error) {
 				console.log(error.message)
+				setErrorMsg(error.message)
 				setStatus('error')
 			}
 			if (data) {
@@ -72,6 +72,11 @@ const LoginForm: FC = () => {
 					LOGIN
 				</Button>
 			</div>
+			{status === 'error' && (
+				<div className='mx-6 bg-bg-danger text-accent-danger p-2 rounded-md'>
+					{errorMsg}
+				</div>
+			)}
 		</form>
 	)
 }

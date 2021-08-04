@@ -13,7 +13,7 @@ const SignupSchema = yup.object({
 	password: yup
 		.string()
 		.required('Password us required')
-		.min(5, 'Password must be longer than 5 characters'),
+		.min(6, 'Password should be at least 6 characters'),
 })
 
 type FormData = yup.InferType<typeof SignupSchema>
@@ -21,10 +21,9 @@ type FormData = yup.InferType<typeof SignupSchema>
 type StatusState = 'loading' | 'idle' | 'success' | 'error'
 
 const SignupForm = () => {
-	const resolver = useYupValidationResolver(SignupSchema)
-
 	const [status, setStatus] = useState<StatusState>('idle')
-
+	const [errorMsg, setErrorMsg] = useState<string | null>(null)
+	const resolver = useYupValidationResolver(SignupSchema)
 	const {
 		handleSubmit,
 		register,
@@ -42,8 +41,9 @@ const SignupForm = () => {
 			})
 
 			if (error) {
-				setStatus('error')
 				console.log(error.message)
+				setStatus('error')
+				setErrorMsg(error.message)
 			}
 
 			if (data) {
@@ -86,6 +86,11 @@ const SignupForm = () => {
 						SIGNUP
 					</Button>
 				</div>
+				{status === 'error' && (
+					<div className='mx-6 bg-bg-danger text-accent-danger p-2 rounded-md'>
+						{errorMsg}
+					</div>
+				)}
 			</form>
 		</>
 	)

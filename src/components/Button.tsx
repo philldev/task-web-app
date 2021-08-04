@@ -1,10 +1,10 @@
-import { HTMLAttributes } from 'react'
+import { ButtonHTMLAttributes } from 'react'
 import { FC } from 'react'
 
 type ButtonVariants = 'solid' | 'outlined' | 'transparent'
 type ButtonColors = 'primary' | 'secondary' | 'danger'
 
-interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	variant?: ButtonVariants
 	color?: ButtonColors
 }
@@ -46,6 +46,7 @@ const Button: FC<ButtonProps> = ({
 	color = 'primary',
 	variant = 'solid',
 	className,
+	...rest
 }) => {
 	return (
 		<button
@@ -53,6 +54,7 @@ const Button: FC<ButtonProps> = ({
 				className ?? ''
 			}`}
 			{...{ onClick }}
+			{...rest}
 		>
 			{children}
 		</button>

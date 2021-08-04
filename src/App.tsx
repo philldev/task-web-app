@@ -1,5 +1,6 @@
 import { Router } from '@reach/router'
 import { useEffect, useState } from 'react'
+import ToastContainer from './components/Toast/ToastContainer'
 import { UserProvider } from './context/UserContext'
 import { Dashboard, Login, Profile, Signup, Splash } from './screens'
 
@@ -34,6 +35,7 @@ export const App = () => {
 					</Router>
 				</UserProvider>
 			)}
+			<ToastContainer />
 		</div>
 	)
 }

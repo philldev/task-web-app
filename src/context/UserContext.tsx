@@ -14,6 +14,7 @@ type UserState = User | null
 type ContextValue = {
 	user: UserState
 	userLoaded: boolean
+	updateUserDetails: (data: Omit<Partial<User>, 'id'>) => Promise<void>
 }
 
 const UserCtx = createContext<ContextValue | undefined>(undefined)
@@ -22,6 +23,19 @@ export const UserProvider: FC = ({ children }) => {
 	const { session } = useAuth()
 	const [user, setUser] = useState<UserState>(null)
 	const [isLoading, setIsLoading] = useState(true)
+
+	const updateUserDetails = async (data: Omit<Partial<User>, 'id'>) => {
+		setUser((prev) =>
+			prev
+				? {
+						...prev,
+						email: data.email ?? prev.email,
+						username: data.username ?? prev.username,
+						avatar_url: data.avatar_url ?? prev.avatar_url,
+				  }
+				: null
+		)
+	}
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -64,10 +78,10 @@ export const UserProvider: FC = ({ children }) => {
 		}
 	}, [session])
 
-	console.log(user)
-
 	return (
-		<UserCtx.Provider value={{ user, userLoaded: !isLoading }}>
+		<UserCtx.Provider
+			value={{ user, userLoaded: !isLoading, updateUserDetails }}
+		>
 			{children}
 		</UserCtx.Provider>
 	)

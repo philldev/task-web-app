@@ -9,7 +9,6 @@ interface Props {
 }
 
 const Modal = ({ title, isOpen, onClose, children }: Props) => {
-	console.log(isOpen)
 	return (
 		<Transition appear show={isOpen} as={Fragment}>
 			<Dialog

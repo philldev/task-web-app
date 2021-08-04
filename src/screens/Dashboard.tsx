@@ -1,5 +1,6 @@
 import { Link, RouteComponentProps } from '@reach/router'
 import { useState } from 'react'
+import Avatar from '../components/Avatar'
 import Button from '../components/Button'
 import FormInput from '../components/FormInput'
 import IconButton from '../components/IconButton'
@@ -31,11 +32,7 @@ const Dashboard = (props: RouteComponentProps) => {
 				}
 				right={
 					<Link to='/profile'>
-						<img
-							className='h-8 w-8 object-cover rounded-full border border-accent-primary'
-							src='https://images.unsplash.com/photo-1627559062130-a7bf86a1fed5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80'
-							alt='avatar'
-						/>
+						<Avatar />
 					</Link>
 				}
 			/>

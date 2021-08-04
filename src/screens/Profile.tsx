@@ -1,5 +1,6 @@
 import { RouteComponentProps, useNavigate } from '@reach/router'
 import { useEffect } from 'react'
+import Avatar from '../components/Avatar'
 import Navbar from '../components/Navbar'
 import ProfileForm from '../components/Profile/ProfileForm'
 import { useAuth } from '../context/AuthContext'
@@ -13,7 +14,6 @@ const Profile = (props: RouteComponentProps) => {
 			navigate('/login')
 		}
 	}, [session, navigate])
-
 
 	return (
 		<div className='flex flex-col min-h-screen'>
@@ -37,15 +37,9 @@ const Profile = (props: RouteComponentProps) => {
 						</svg>
 					</button>
 				}
-				right={
-					<img
-						className='h-8 w-8 object-cover rounded-full border border-accent-primary'
-						src='https://images.unsplash.com/photo-1627559062130-a7bf86a1fed5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80'
-						alt='avatar'
-					/>
-				}
+				right={<Avatar />}
 			/>
-				<ProfileForm />
+			<ProfileForm />
 		</div>
 	)
 }

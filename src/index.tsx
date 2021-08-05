@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import reportWebVitals from './reportWebVitals'
 import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
-import App from './app'
+import App from './App'
 
 ReactDOM.render(
 	<React.StrictMode>

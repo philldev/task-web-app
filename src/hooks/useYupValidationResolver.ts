@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { FieldError, FieldErrors } from 'react-hook-form'
+import { FieldErrors } from 'react-hook-form'
 import * as yup from 'yup'
 
 const useYupValidationResolver = (validationSchema: yup.AnyObjectSchema) =>

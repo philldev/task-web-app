@@ -16,7 +16,7 @@ const Signup = (props: RouteComponentProps) => {
 
 	return (
 		<div className='min-h-screen'>
-			<div className='pt-20'>
+			<div className='pt-20 max-w-lg w-full mx-auto'>
 				<h1 className='text-4xl font-bold text-center px-2 mb-12'>SIGNUP</h1>
 				<SignupForm />
 			</div>

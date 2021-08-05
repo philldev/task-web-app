@@ -5,7 +5,7 @@ import { UserProvider } from './context/UserContext'
 import { Dashboard, Login, Profile, Signup, Splash } from './screens'
 import ToastContainer from './components/Toast/ToastContainer'
 
-export const App = () => {
+const App = () => {
 	const [isLoading, setIsLoading] = useState(true)
 
 	useEffect(() => {
@@ -42,3 +42,6 @@ export const App = () => {
 		</div>
 	)
 }
+
+
+export default App

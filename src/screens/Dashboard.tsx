@@ -1,9 +1,19 @@
-import { Link, RouteComponentProps } from '@reach/router'
+import { Link, RouteComponentProps, useNavigate } from '@reach/router'
+import { useEffect } from 'react'
 import Avatar from '../components/Avatar'
 import Navbar from '../components/Navbar'
 import TaskInbox from '../components/Task/TaskInbox'
+import { useAuth } from '../context/AuthContext'
 
 const Dashboard = (props: RouteComponentProps) => {
+	const { session } = useAuth()
+	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (!session) {
+			navigate('/login')
+		}
+	}, [session, navigate])
 	return (
 		<div className='flex flex-col min-h-screen'>
 			<Navbar

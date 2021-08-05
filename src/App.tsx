@@ -1,9 +1,9 @@
 import { Router } from '@reach/router'
 import { useEffect, useState } from 'react'
-import ToastContainer from './components/Toast/ToastContainer'
 import { TaskProvider } from './context/TaskContext'
 import { UserProvider } from './context/UserContext'
 import { Dashboard, Login, Profile, Signup, Splash } from './screens'
+import ToastContainer from './components/Toast/ToastContainer'
 
 export const App = () => {
 	const [isLoading, setIsLoading] = useState(true)

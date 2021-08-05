@@ -14,7 +14,8 @@ const Modal = ({ title, isOpen, onClose, children }: Props) => {
 			<Dialog
 				as='div'
 				className='fixed inset-0 z-10 overflow-y-auto'
-				{...{ onClose }}
+				{...{ onClose, }}
+				open={isOpen}
 			>
 				<div className='min-h-screen px-4 text-center'>
 					<Transition.Child
@@ -51,7 +52,7 @@ const Modal = ({ title, isOpen, onClose, children }: Props) => {
 							{title && (
 								<Dialog.Title
 									as='h3'
-									className='text-lg font-medium leading-6 text-gray-900'
+									className='text-lg font-medium leading-6 text-gray-900 mb-4'
 								>
 									{title}
 								</Dialog.Title>

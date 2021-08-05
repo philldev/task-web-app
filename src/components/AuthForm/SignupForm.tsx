@@ -6,6 +6,7 @@ import useYupValidationResolver from '../../hooks/useYupValidationResolver'
 import supabase from '../../supabase'
 import { useState } from 'react'
 import Spinner from '../Spinner'
+import { Profile } from '../../context/UserContext'
 
 const SignupSchema = yup.object({
 	username: yup.string().required('Username is required'),
@@ -35,63 +36,80 @@ const SignupForm = () => {
 	const onSubmit = async (formData: FormData) => {
 		if (status !== 'loading') {
 			setStatus('loading')
-			const { data, error } = await supabase.auth.signUp({
+			const { error, user } = await supabase.auth.signUp({
 				email: formData.email,
 				password: formData.password,
 			})
 
 			if (error) {
-				console.log(error.message)
 				setStatus('error')
 				setErrorMsg(error.message)
 			}
 
-			if (data) {
-				setStatus('success')
+			if (user) {
+				const { error: profileErr } = await supabase
+					.from<Profile>('profiles')
+					.insert(
+						{
+							id: user.id,
+							email: formData.email,
+							username: formData.username,
+						},
+						{ returning: 'minimal' }
+					)
+				if (profileErr) {
+					setStatus('error')
+					setErrorMsg(profileErr.message)
+				} else {
+					setStatus('success')
+				}
 			}
 		}
 	}
 
 	return (
 		<>
-			{status === 'success' && <SuccessInfo />}
-			<form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-6'>
-				<div className='flex flex-col items-stretch gap-2 px-6'>
-					<FormInput
-						placeholder='Enter your username'
-						label='Username'
-						error={errors.username?.message}
-						{...register('username')}
-					/>
-					<FormInput
-						placeholder='Enter your email'
-						label='Email'
-						type='email'
-						error={errors.email?.message}
-						{...register('email')}
-					/>
-					<FormInput
-						placeholder='Enter your password'
-						label='Password'
-						type='password'
-						error={errors.password?.message}
-						{...register('password')}
-					/>
-				</div>
-				<div className='flex justify-center px-6 '>
-					<Button>
-						{status === 'loading' && (
-							<Spinner size='xs' color='secondary' className='mr-2' />
-						)}{' '}
-						SIGNUP
-					</Button>
-				</div>
-				{status === 'error' && (
-					<div className='mx-6 bg-bg-danger text-accent-danger p-2 rounded-md'>
-						{errorMsg}
+			{status === 'success' ? (
+				<SuccessInfo />
+			) : (
+				<form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-6'>
+					<div className='flex flex-col items-stretch gap-2 px-6'>
+						<FormInput
+							placeholder='Enter your username'
+							label='Username'
+							error={errors.username?.message}
+							{...register('username')}
+						/>
+						<FormInput
+							placeholder='Enter your email'
+							label='Email'
+							type='email'
+							error={errors.email?.message}
+							{...register('email')}
+						/>
+						<FormInput
+							placeholder='Enter your password'
+							label='Password'
+							type='password'
+							error={errors.password?.message}
+							{...register('password')}
+						/>
 					</div>
-				)}
-			</form>
+					<div className='flex justify-center px-6 '>
+						<Button>
+							{status === 'loading' && (
+								<Spinner size='xs' color='secondary' className='mr-2' />
+							)}{' '}
+							SIGNUP
+						</Button>
+					</div>
+					{status === 'error' && (
+						<div className='mx-6 bg-bg-danger text-accent-danger p-2 rounded-md'>
+							{errorMsg}
+						</div>
+					)}
+				</form>
+			)}
 		</>
 	)
 }

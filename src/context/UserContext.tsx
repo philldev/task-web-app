@@ -2,19 +2,19 @@ import { createContext, FC, useContext, useEffect, useState } from 'react'
 import supabase from '../supabase'
 import { useAuth } from './AuthContext'
 
-interface User {
+export interface Profile {
 	id: string
 	username: string
 	email: string
 	avatar_url?: string
 }
 
-type UserState = User | null
+type UserState = Profile | null
 
 type ContextValue = {
 	user: UserState
 	userLoaded: boolean
-	updateUserDetails: (data: Omit<Partial<User>, 'id'>) => Promise<void>
+	updateUserDetails: (data: Omit<Partial<Profile>, 'id'>) => Promise<void>
 }
 
 const UserCtx = createContext<ContextValue | undefined>(undefined)
@@ -24,7 +24,7 @@ export const UserProvider: FC = ({ children }) => {
 	const [user, setUser] = useState<UserState>(null)
 	const [isLoading, setIsLoading] = useState(true)
 
-	const updateUserDetails = async (data: Omit<Partial<User>, 'id'>) => {
+	const updateUserDetails = async (data: Omit<Partial<Profile>, 'id'>) => {
 		setUser((prev) =>
 			prev
 				? {
@@ -40,7 +40,7 @@ export const UserProvider: FC = ({ children }) => {
 	useEffect(() => {
 		const fetchUser = async () => {
 			const { data, error } = await supabase
-				.from<User>('profiles')
+				.from<Profile>('profiles')
 				.select(`email, username, id, avatar_url`)
 				.eq('id', session?.user?.id)
 

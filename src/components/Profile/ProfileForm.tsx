@@ -30,9 +30,6 @@ const ProfileForm = () => {
 				</div>
 				<div className='grid justify-start gap-2 justify-items-start'>
 					<button className='text-base font-bold underline' onClick={logout}>
-						Reset Password
-					</button>
-					<button className='text-base font-bold underline' onClick={logout}>
 						Logout
 					</button>
 				</div>

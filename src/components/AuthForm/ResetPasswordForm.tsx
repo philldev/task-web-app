@@ -1,28 +1,32 @@
+import { useNavigate } from '@reach/router'
+import { FC, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import * as yup from 'yup'
+import { useToast } from '../../context/ToastContext'
+import useYupValidationResolver from '../../hooks/useYupValidationResolver'
+import supabase from '../../supabase'
 import Button from '../Button'
 import FormInput from '../FormInput'
-import * as yup from 'yup'
-import { useForm } from 'react-hook-form'
-import useYupValidationResolver from '../../hooks/useYupValidationResolver'
-import { FC, useState } from 'react'
-import supabase from '../../supabase'
 import Spinner from '../Spinner'
-import { Link } from '@reach/router'
 
-const LoginSchema = yup.object({
-	email: yup.string().required('Email is required').email('Email is Invalid'),
+const ResetPassSchema = yup.object({
 	password: yup
 		.string()
 		.required('Password is required')
 		.min(5, 'Password must be longer than 5 characters'),
 })
 
-type FormData = yup.InferType<typeof LoginSchema>
+type FormData = yup.InferType<typeof ResetPassSchema>
 type StatusState = 'loading' | 'idle' | 'success' | 'error'
 
-const LoginForm: FC = () => {
+interface Props {
+	accessToken?: string | null
+}
+
+const ResetPasswordForm: FC<Props> = ({ accessToken }) => {
 	const [status, setStatus] = useState<StatusState>('idle')
 	const [errorMsg, setErrorMsg] = useState<string | null>(null)
-	const resolver = useYupValidationResolver(LoginSchema)
+	const resolver = useYupValidationResolver(ResetPassSchema)
 	const {
 		handleSubmit,
 		register,
@@ -32,10 +36,16 @@ const LoginForm: FC = () => {
 		resolver,
 	})
 
-	const onSubmit = async ({ email, password }: FormData) => {
-		if (status !== 'loading') {
+	const { dispatch } = useToast()
+
+	const navigate = useNavigate()
+
+	const onSubmit = async ({ password }: FormData) => {
+		if (status !== 'loading' && accessToken) {
 			setStatus('loading')
-			let { data, error } = await supabase.auth.signIn({ email, password })
+			let { data, error } = await supabase.auth.api.updateUser(accessToken, {
+				password,
+			})
 			if (error) {
 				console.log(error.message)
 				setErrorMsg(error.message)
@@ -43,6 +53,14 @@ const LoginForm: FC = () => {
 			}
 			if (data) {
 				setStatus('success')
+				dispatch({
+					TYPE: 'SUCCESS',
+					PAYLOAD: {
+						message: `Success!`,
+						type: 'SUCCESS',
+					},
+				})
+				navigate('/login')
 			}
 		}
 	}
@@ -51,27 +69,20 @@ const LoginForm: FC = () => {
 		<form onSubmit={handleSubmit(onSubmit)} className='grid gap-6'>
 			<div className='grid items-stretch gap-2 px-6'>
 				<FormInput
-					error={errors.email?.message}
-					{...register('email')}
-					placeholder='Enter your email'
-					label='Email'
-				/>
-				<FormInput
 					placeholder='Enter your password'
-					label='Password'
+					label='New Password'
 					type='password'
 					autoComplete='true'
 					error={errors.password?.message}
 					{...register('password')}
 				/>
-				<Link to='/forgot-password'>Forgot Password</Link>
 			</div>
 			<div className='flex justify-center px-6'>
 				<Button>
 					{status === 'loading' && (
 						<Spinner size='xs' className='mr-2' color='secondary' />
 					)}{' '}
-					LOGIN
+					Reset Password
 				</Button>
 			</div>
 			{status === 'error' && (
@@ -83,4 +94,4 @@ const LoginForm: FC = () => {
 	)
 }
 
-export default LoginForm
+export default ResetPasswordForm

@@ -1,9 +1,11 @@
-import { Router } from '@reach/router'
+import { Router, useNavigate } from '@reach/router'
 import { useEffect, useState } from 'react'
 import { TaskProvider } from './context/TaskContext'
 import { UserProvider } from './context/UserContext'
 import { Dashboard, Login, Profile, Signup, Splash } from './screens'
 import ToastContainer from './components/Toast/ToastContainer'
+import ForgotPassword from './screens/ForgotPassword'
+import ResetPassword from './screens/ResetPassword'
 
 const App = () => {
 	const [isLoading, setIsLoading] = useState(true)
@@ -22,6 +24,27 @@ const App = () => {
 		}
 	}, [])
 
+	useEffect(() => {
+		const hash = window.location.hash.slice(1)
+
+		console.log(hash);
+
+		const queryParams = hash.split('&').reduce((res, item) => {
+			let parts = item.split('=')
+			return {
+				...res,
+				[parts[0]]: parts[1],
+			}
+		}, {}) as any
+
+		if (queryParams.type === 'recovery' && queryParams.access_token) {
+			window.location.replace(
+				`/reset-password?access-token=${queryParams.access_token}`
+			)
+		}
+
+	}, [isLoading])
+
 	return (
 		<div className='bg-bg-1 text-text-1 min-h-screen'>
 			{isLoading ? (
@@ -34,6 +57,8 @@ const App = () => {
 							<Profile path='/profile' />
 							<Signup path='/signup' />
 							<Login path='/login' />
+							<ForgotPassword path='/forgot-password' />
+							<ResetPassword path='/reset-password' />
 						</Router>
 					</TaskProvider>
 				</UserProvider>
@@ -42,6 +67,5 @@ const App = () => {
 		</div>
 	)
 }
-
 
 export default App

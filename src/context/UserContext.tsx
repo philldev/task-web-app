@@ -6,7 +6,7 @@ export interface Profile {
 	id: string
 	username: string
 	email: string
-	avatar_url?: string
+	avatarUrl?: string
 }
 
 type UserState = Profile | null
@@ -31,7 +31,7 @@ export const UserProvider: FC = ({ children }) => {
 						...prev,
 						email: data.email ?? prev.email,
 						username: data.username ?? prev.username,
-						avatar_url: data.avatar_url ?? prev.avatar_url,
+						avatarUrl: data.avatarUrl ?? prev.avatarUrl,
 				  }
 				: null
 		)
@@ -41,7 +41,7 @@ export const UserProvider: FC = ({ children }) => {
 		const fetchUser = async () => {
 			const { data, error } = await supabase
 				.from<Profile>('profiles')
-				.select(`email, username, id, avatar_url`)
+				.select(`email, username, id, avatarUrl`)
 				.eq('id', session?.user?.id)
 
 			if (error) {
@@ -60,7 +60,7 @@ export const UserProvider: FC = ({ children }) => {
 				if (session && session.user)
 					setUser({
 						email: session.user.email ?? '',
-						avatar_url: '',
+						avatarUrl: '',
 						username: '',
 						id: session.user.id,
 					})

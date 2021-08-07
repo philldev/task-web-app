@@ -2,7 +2,7 @@ import { useUser } from '../context/UserContext'
 
 const Avatar = () => {
 	const { user } = useUser()
-	if (!user || !user.avatar_url)
+	if (!user || !user.avatarUrl)
 		return (
 			<svg
 				xmlns='http://www.w3.org/2000/svg'
@@ -22,7 +22,7 @@ const Avatar = () => {
 	return (
 		<img
 			className='h-8 w-8 object-cover rounded-full'
-			src={user.avatar_url}
+			src={user.avatarUrl}
 			alt='avatar'
 		/>
 	)

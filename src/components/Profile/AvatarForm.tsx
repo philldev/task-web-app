@@ -36,7 +36,7 @@ type StatusState = 'loading' | 'idle' | 'success' | 'error'
 const AvatarForm = () => {
 	const { dispatch } = useToast()
 	const { user, updateUserDetails } = useUser()
-	const [tempImgUrl, setTempImgUrl] = useState(user?.avatar_url)
+	const [tempImgUrl, setTempImgUrl] = useState(user?.avatarUrl)
 	const [status, setStatus] = useState<StatusState>('idle')
 	const resolver = useYupValidationResolver(AvatarFormSchema)
 	const {
@@ -84,7 +84,7 @@ const AvatarForm = () => {
 
 				if (downloadData) {
 					let avatar_url = downloadData?.publicURL
-					updateUserDetails({ avatar_url })
+					updateUserDetails({ avatarUrl: avatar_url })
 
 					let { error: updateProfileErr } = await supabase
 						.from('profiles')
@@ -157,7 +157,7 @@ const AvatarForm = () => {
 					</svg>
 				)}
 			</div>
-			{user && (user.avatar_url !== tempImgUrl) ? (
+			{user && (user.avatarUrl !== tempImgUrl) ? (
 				<div
 					className={`flex absolute bottom-0 p-6 w-full left-0 border-border-1 border-t`}
 				>
@@ -166,7 +166,7 @@ const AvatarForm = () => {
 						variant='outlined'
 						color='secondary'
 						className='mr-2'
-						onClick={() => setTempImgUrl(user.avatar_url)}
+						onClick={() => setTempImgUrl(user.avatarUrl)}
 					>
 						Cancel
 					</Button>

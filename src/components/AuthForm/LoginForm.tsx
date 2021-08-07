@@ -47,8 +47,8 @@ const LoginForm: FC = () => {
 	}
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-6'>
-			<div className='flex flex-col items-stretch gap-2 px-6'>
+		<form onSubmit={handleSubmit(onSubmit)} className='grid gap-6'>
+			<div className='grid items-stretch gap-2 px-6'>
 				<FormInput
 					error={errors.email?.message}
 					{...register('email')}

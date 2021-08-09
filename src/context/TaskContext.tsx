@@ -1,5 +1,4 @@
 import { createContext, FC, useContext, useEffect, useReducer } from 'react'
-import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid'
 import firebase from '../firebase'
 import { useUser } from './UserContext'

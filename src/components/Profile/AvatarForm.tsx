@@ -1,13 +1,13 @@
-import { useUser } from '../../context/UserContext'
 import * as yup from 'yup'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import useYupValidationResolver from '../../hooks/useYupValidationResolver'
 import Button from '../Button'
 import Spinner from '../Spinner'
+import { useUser } from '../../context/UserContext'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { useEffect } from 'react'
-import supabase from '../../supabase'
 import { useToast } from '../../context/ToastContext'
+import firebase from '../../firebase'
 
 const FILE_SIZE = 1048576 // 1mb
 const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']
@@ -34,10 +34,11 @@ type AvatarFormData = {
 type StatusState = 'loading' | 'idle' | 'success' | 'error'
 
 const AvatarForm = () => {
-	const { dispatch } = useToast()
 	const { user, updateUserDetails } = useUser()
 	const [tempImgUrl, setTempImgUrl] = useState(user?.avatarUrl)
 	const [status, setStatus] = useState<StatusState>('idle')
+	const [uploadProgress, setUploadProgress] = useState<number | null>(null)
+	const { dispatch } = useToast()
 	const resolver = useYupValidationResolver(AvatarFormSchema)
 	const {
 		register,
@@ -50,68 +51,52 @@ const AvatarForm = () => {
 
 	const onSubmit = async (data: AvatarFormData) => {
 		if (status !== 'loading' && user) {
-			const file = data.image[0]
-			const fileExt = file.name.split('.').pop()
-			const fileName = `${user.id}-${Date.now()}.${fileExt}`
-			const filePath = `${fileName}`
-
 			setStatus('loading')
 
-			let { error: uploadError } = await supabase.storage
-				.from('avatars')
-				.upload(filePath, file)
+			let storageRef = firebase.storage().ref()
+			let userAvatarRef = storageRef.child(`avatars/${user?.id}.jpg`)
 
-			if (uploadError) {
-				setStatus('error')
-				dispatch({
-					TYPE: 'ERROR',
-					PAYLOAD: { type: 'ERROR', message: uploadError.message },
-				})
-			} else {
-				const { data: downloadData, error: downloadError } = supabase.storage
-					.from('avatars')
-					.getPublicUrl(filePath)
+			let uploadTask = userAvatarRef.put(data.image[0])
 
-				console.log(downloadData, downloadError)
-
-				if (downloadError) {
+			uploadTask.on(
+				'state_changed',
+				(snapshot) => {
+					var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+					setUploadProgress(progress)
+					switch (snapshot.state) {
+						case firebase.storage.TaskState.PAUSED: // or 'paused'
+							console.log('Upload is paused')
+							break
+						case firebase.storage.TaskState.RUNNING: // or 'running'
+							console.log('Upload is running')
+							break
+					}
+				},
+				(error) => {
 					setStatus('error')
 					dispatch({
 						TYPE: 'ERROR',
-						PAYLOAD: { type: 'ERROR', message: downloadError.message },
+						PAYLOAD: { message: error.message, type: 'ERROR' },
+					})
+				},
+				() => {
+					uploadTask.snapshot.ref.getDownloadURL().then(async (downloadURL) => {
+						try {
+							await updateUserDetails({ avatarUrl: downloadURL })
+							setStatus('success')
+							setStatus('idle')
+							setUploadProgress(null)
+						} catch (error) {
+							setStatus('error')
+							console.log(error.message)
+							dispatch({
+								TYPE: 'ERROR',
+								PAYLOAD: { message: error.message, type: 'ERROR' },
+							})
+						}
 					})
 				}
-
-				if (downloadData) {
-					let avatar_url = downloadData?.publicURL
-					updateUserDetails({ avatarUrl: avatar_url })
-
-					let { error: updateProfileErr } = await supabase
-						.from('profiles')
-						.update({
-							avatar_url,
-						})
-						.match({ id: user.id })
-
-					if (updateProfileErr) {
-						setStatus('error')
-						dispatch({
-							TYPE: 'ERROR',
-							PAYLOAD: { type: 'ERROR', message: updateProfileErr.message },
-						})
-					} else {
-						setStatus('success')
-						setTempImgUrl(avatar_url)
-						dispatch({
-							TYPE: 'SUCCESS',
-							PAYLOAD: {
-								type: 'SUCCESS',
-								message: 'Avatar successfully updated!',
-							},
-						})
-					}
-				}
-			}
+			)
 		}
 	}
 
@@ -127,13 +112,21 @@ const AvatarForm = () => {
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className='grid gap-1'>
 			<label className='text-sm font-bold text-text-2'>Avatar</label>
-			<div className='w-max rounded-full relative'>
+			<div className='w-max rounded-full relative overflow-hidden'>
 				<input
 					{...register('image')}
 					type='file'
 					className='absolute inset-0 w-full h-full block opacity-0'
 					accept='image/*'
 				/>
+				{uploadProgress ? (
+					<div
+						className='absolute inset-0 bg-accent-primary opacity-40'
+						style={{
+							height: `${uploadProgress}%`,
+						}}
+					/>
+				) : null}
 				{tempImgUrl ? (
 					<img
 						className='h-20 w-20 object-cover rounded-full border-2 border-accent-primary'
@@ -157,7 +150,7 @@ const AvatarForm = () => {
 					</svg>
 				)}
 			</div>
-			{user && (user.avatarUrl !== tempImgUrl) ? (
+			{user && user.avatarUrl !== tempImgUrl ? (
 				<div
 					className={`flex absolute bottom-0 p-6 w-full left-0 border-border-1 border-t`}
 				>

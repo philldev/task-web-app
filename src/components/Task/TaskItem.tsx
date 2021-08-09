@@ -1,7 +1,7 @@
 import { Menu, Transition } from '@headlessui/react'
 import { FC, Fragment, useRef } from 'react'
 import { useState } from 'react'
-import { Task, useTask } from '../../context/TaskContext'
+import { Task, useTasks} from '../../context/TaskContext'
 import useOnClickOutside from '../../hooks/useClickOutside'
 import Checkbox from '../Checkbox'
 import DeleteTaskForm from './DeleteTaskForm'
@@ -14,7 +14,7 @@ interface Props {
 const TaskItem: FC<Props> = ({ task }) => {
 	const [editing, setEditing] = useState(false)
 
-	const { updateTask } = useTask()
+	const { updateTask } = useTasks()
 
 	let ref = useRef(null)
 	useOnClickOutside(ref, () => {

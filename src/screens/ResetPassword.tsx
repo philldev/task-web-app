@@ -9,7 +9,7 @@ import ResetPasswordForm from '../components/AuthForm/ResetPasswordForm'
 import { useAuth } from '../context/AuthContext'
 
 const ResetPassword = (props: RouteComponentProps) => {
-	const { session } = useAuth()
+	const { authUser} = useAuth()
 
 	const navigate = useNavigate()
 
@@ -18,10 +18,10 @@ const ResetPassword = (props: RouteComponentProps) => {
 	const location = useLocation()
 
 	useEffect(() => {
-		if (session) {
+		if (authUser) {
 			navigate('/')
 		}
-	}, [session, navigate])
+	}, [authUser, navigate])
 
 	useEffect(() => {
 		let params = new URLSearchParams(location.search)

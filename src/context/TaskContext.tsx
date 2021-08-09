@@ -1,9 +1,8 @@
-import { useEffect } from 'react'
-import { createContext, FC, useReducer } from 'react'
-import supabase from '../supabase'
-import { useUser } from './UserContext'
+import { createContext, FC, useContext, useEffect, useReducer } from 'react'
+import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid'
-import { useContext } from 'react'
+import firebase from '../firebase'
+import { useUser } from './UserContext'
 
 export interface Task {
 	text: string
@@ -55,14 +54,14 @@ type State = {
 	tasks: Task[]
 }
 
-type TaskContextValue = {
+type TasksContextValue = {
 	state: State
 	addTask: ({ text }: { text: string }) => Promise<void>
 	updateTask: ({ task }: { task: Task }) => Promise<void>
 	deleteTask: ({ id }: { id: string }) => Promise<void>
 }
 
-const TaskContext = createContext<TaskContextValue | undefined>(undefined)
+const TasksContext = createContext<TasksContextValue | undefined>(undefined)
 
 const tasksReducer = (state: State, action: Action): State => {
 	switch (action.type) {
@@ -116,9 +115,9 @@ const tasksReducer = (state: State, action: Action): State => {
 	}
 }
 
-const taskDB = supabase.from<Task>('tasks')
+const tasksRef = firebase.firestore().collection('tasks')
 
-export const TaskProvider: FC = ({ children }) => {
+export const TasksProvider: FC = ({ children }) => {
 	const { user } = useUser()
 	const [state, dispatch] = useReducer(tasksReducer, {
 		status: 'loading',
@@ -126,6 +125,7 @@ export const TaskProvider: FC = ({ children }) => {
 	})
 
 	const addTask = async ({ text }: { text: string }) => {
+		console.log(text)
 		const prevTasks = state.tasks
 		const tempTask: Task = {
 			createdAt: new Date().toISOString(),
@@ -134,6 +134,7 @@ export const TaskProvider: FC = ({ children }) => {
 			text,
 			userId: user!.id,
 		}
+		console.log(tempTask)
 
 		dispatch({
 			type: 'ADD',
@@ -142,29 +143,14 @@ export const TaskProvider: FC = ({ children }) => {
 			},
 		})
 
-		const { data, error } = await taskDB
-			.insert([
-				{
-					text,
-					userId: user!.id,
-				},
-			])
-			.single()
-		if (error) {
+		try {
+			await tasksRef.doc(tempTask.id).set(tempTask)
+		} catch (error) {
 			dispatch({
 				type: 'ERROR',
 				payload: {
 					message: error.message,
 					tasks: prevTasks,
-				},
-			})
-		}
-		if (data) {
-			dispatch({
-				type: 'UPDATE',
-				payload: {
-					task: data,
-					id: tempTask.id,
 				},
 			})
 		}
@@ -179,18 +165,18 @@ export const TaskProvider: FC = ({ children }) => {
 			},
 		})
 
-		const { error } = await taskDB
-			.delete({ returning: 'minimal' })
-			.match({ id })
-
-		if (error) {
-			dispatch({
-				type: 'ERROR',
-				payload: {
-					message: error.message,
-					tasks: prevTasks,
-				},
-			})
+		try {
+			await tasksRef.doc(id).delete()
+		} catch (error) {
+			if (error) {
+				dispatch({
+					type: 'ERROR',
+					payload: {
+						message: error.message,
+						tasks: prevTasks,
+					},
+				})
+			}
 		}
 	}
 	const updateTask = async ({ task }: { task: Task }) => {
@@ -204,27 +190,19 @@ export const TaskProvider: FC = ({ children }) => {
 			},
 		})
 
-		const { error } = await supabase
-			.from<Task>('tasks')
-			.update(
-				{
-					isCompleted: task.isCompleted,
-					text: task.text,
-				},
-				{ returning: 'minimal', count: 'exact' }
-			)
-			.match({ id: task.id })
-			.single()
-
-		if (error) {
-			console.log(error.message)
-			dispatch({
-				type: 'ERROR',
-				payload: {
-					message: error.message,
-					tasks: prevTasks,
-				},
-			})
+		try {
+			await tasksRef.doc(task.id).update(task)
+		} catch (error) {
+			if (error) {
+				console.log(error.message)
+				dispatch({
+					type: 'ERROR',
+					payload: {
+						message: error.message,
+						tasks: prevTasks,
+					},
+				})
+			}
 		}
 	}
 
@@ -232,17 +210,19 @@ export const TaskProvider: FC = ({ children }) => {
 		const fetchTasks = async () => {
 			dispatch({ type: 'LOAD' })
 
-			const { data, error } = await taskDB.select().match({ userId: user!.id })
-
-			if (error) {
+			try {
+				const snap = await firebase
+					.firestore()
+					.collection('tasks')
+					.where('userId', '==', user!.id)
+					.get()
+				const data = snap.docs.map((t) => t.data() as Task)
+				dispatch({ type: 'LOADED', payload: { tasks: data } })
+			} catch (error) {
 				dispatch({
 					type: 'ERROR',
 					payload: { message: error.message, tasks: [] },
 				})
-			}
-
-			if (data) {
-				dispatch({ type: 'LOADED', payload: { tasks: data } })
 			}
 		}
 
@@ -252,7 +232,7 @@ export const TaskProvider: FC = ({ children }) => {
 	}, [user])
 
 	return (
-		<TaskContext.Provider
+		<TasksContext.Provider
 			value={{
 				addTask,
 				deleteTask,
@@ -261,12 +241,12 @@ export const TaskProvider: FC = ({ children }) => {
 			}}
 		>
 			{children}
-		</TaskContext.Provider>
+		</TasksContext.Provider>
 	)
 }
 
-export const useTask = () => {
-	const ctx = useContext(TaskContext)
+export const useTasks = () => {
+	const ctx = useContext(TasksContext)
 
 	if (!ctx) throw new Error('No Context Provided')
 

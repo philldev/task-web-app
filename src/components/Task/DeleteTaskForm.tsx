@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Task, useTask } from '../../context/TaskContext'
+import { Task, useTasks } from '../../context/TaskContext'
 import Button from '../Button'
 import Modal from '../Modal'
 
@@ -10,7 +10,7 @@ interface Props {
 }
 
 const DeleteTaskForm: FC<Props> = ({ isOpen, onClose, task }) => {
-	const { deleteTask } = useTask()
+	const { deleteTask } = useTasks()
 
 	const onDelete = () => {
 		deleteTask({ id: task.id })

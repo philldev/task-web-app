@@ -1,5 +1,5 @@
 import { createContext, FC, useContext, useEffect, useState } from 'react'
-import supabase from '../supabase'
+import firebase from '../firebase'
 import { useAuth } from './AuthContext'
 
 export interface Profile {
@@ -7,7 +7,6 @@ export interface Profile {
 	username: string
 	email: string
 	avatarUrl?: string
-	verified? : boolean
 }
 
 type UserState = Profile | null
@@ -21,67 +20,54 @@ type ContextValue = {
 const UserCtx = createContext<ContextValue | undefined>(undefined)
 
 export const UserProvider: FC = ({ children }) => {
-	const { session } = useAuth()
+	const { authUser } = useAuth()
 	const [user, setUser] = useState<UserState>(null)
 	const [isLoading, setIsLoading] = useState(true)
 
-	const updateUserDetails = async (data: Omit<Partial<Profile>, 'id'>) => {
-		setUser((prev) =>
-			prev
-				? {
-						...prev,
-						email: data.email ?? prev.email,
-						username: data.username ?? prev.username,
-						avatarUrl: data.avatarUrl ?? prev.avatarUrl,
-				  }
-				: null
-		)
+	const updateUserDetails = async (data: Partial<Profile>) => {
+		try {
+			await firebase
+				.firestore()
+				.collection('profiles')
+				.doc(user?.id!)
+				.update(data)
+			setUser((prev) =>
+				prev
+					? {
+							...prev,
+							email: data.email ?? prev.email,
+							username: data.username ?? prev.username,
+							avatarUrl: data.avatarUrl ?? prev.avatarUrl,
+					  }
+					: null
+			)
+		} catch (error) {
+			throw error
+		}
 	}
 
 	useEffect(() => {
 		const fetchUser = async () => {
-			const { data, error } = await supabase
-				.from<Profile>('profiles')
-				.select(`email, username, id, avatarUrl`)
-				.eq('id', session?.user?.id)
-
-			if (error) {
-				console.log(error.message)
+			const userProfileDoc = await firebase
+				.firestore()
+				.collection('profiles')
+				.doc(authUser?.uid)
+				.get()
+			console.log(userProfileDoc.exists)
+			if (userProfileDoc.exists) {
+				setUser(userProfileDoc.data() as Profile)
+				setIsLoading(false)
 			}
-
-			if (data?.length === 0) {
-				await supabase.from('profiles').insert([
-					{
-						id: session?.user?.id,
-						email: session?.user?.email,
-						username: null,
-						avatar_url: null,
-					},
-				])
-				if (session && session.user)
-					setUser({
-						email: session.user.email ?? '',
-						avatarUrl: '',
-						username: '',
-						id: session.user.id,
-					})
-			}
-
-			if (data && data?.length > 0) {
-				setUser(data[0])
-			}
-
-			setIsLoading(false)
 		}
 
-		if (session) {
+		if (authUser) {
 			fetchUser()
 		}
-	}, [session])
+	}, [authUser])
 
 	return (
 		<UserCtx.Provider
-			value={{ user, userLoaded: !isLoading, updateUserDetails }}
+			value={{ user: user, userLoaded: !isLoading, updateUserDetails }}
 		>
 			{children}
 		</UserCtx.Provider>

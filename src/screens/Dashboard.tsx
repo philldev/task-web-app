@@ -6,14 +6,14 @@ import TaskInbox from '../components/Task/TaskInbox'
 import { useAuth } from '../context/AuthContext'
 
 const Dashboard = (props: RouteComponentProps) => {
-	const { session } = useAuth()
+	const { authUser } = useAuth()
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if (!session) {
+		if (!authUser) {
 			navigate('/login')
 		}
-	}, [session, navigate])
+	}, [authUser, navigate])
 	return (
 		<div className='flex flex-col min-h-screen'>
 			<Navbar

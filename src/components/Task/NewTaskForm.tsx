@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { useTask } from '../../context/TaskContext'
+import { useTasks } from '../../context/TaskContext'
 import useYupValidationResolver from '../../hooks/useYupValidationResolver'
 import Button from '../Button'
 import FormInput from '../FormInput'
@@ -16,7 +16,7 @@ const NewTaskFormSchema = yup.object({
 type FormData = yup.InferType<typeof NewTaskFormSchema>
 
 const NewTaskForm: FC = () => {
-	const { addTask } = useTask()
+	const { addTask } = useTasks()
 	const [isOpen, setIsOpen] = useState(false)
 
 	const {

@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { Task, useTask } from '../../context/TaskContext'
+import { Task, useTasks } from '../../context/TaskContext'
 import useYupValidationResolver from '../../hooks/useYupValidationResolver'
 import Button from '../Button'
 import FormInput from '../FormInput'
@@ -15,12 +15,12 @@ type FormData = yup.InferType<typeof NewTaskFormSchema>
 
 interface Props {
 	task: Task
-	isOpen : boolean
-	onClose : () => void
+	isOpen: boolean
+	onClose: () => void
 }
 
 const UpdateTaskForm: FC<Props> = ({ task, isOpen, onClose }) => {
-	const { updateTask } = useTask()
+	const { updateTask } = useTasks()
 
 	const {
 		register,

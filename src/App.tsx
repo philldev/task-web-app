@@ -1,9 +1,9 @@
-import { Router, useNavigate } from '@reach/router'
+import { Router } from '@reach/router'
 import { useEffect, useState } from 'react'
-import { TaskProvider } from './context/TaskContext'
+import ToastContainer from './components/Toast/ToastContainer'
+import { TasksProvider } from './context/TaskContext'
 import { UserProvider } from './context/UserContext'
 import { Dashboard, Login, Profile, Signup, Splash } from './screens'
-import ToastContainer from './components/Toast/ToastContainer'
 import ForgotPassword from './screens/ForgotPassword'
 import ResetPassword from './screens/ResetPassword'
 
@@ -49,7 +49,7 @@ const App = () => {
 				<Splash />
 			) : (
 				<UserProvider>
-					<TaskProvider>
+					<TasksProvider>
 						<Router className='min-h-screen'>
 							<Dashboard path='/' />
 							<Profile path='/profile' />
@@ -58,7 +58,7 @@ const App = () => {
 							<ForgotPassword path='/forgot-password' />
 							<ResetPassword path='/reset-password' />
 						</Router>
-					</TaskProvider>
+					</TasksProvider>
 				</UserProvider>
 			)}
 			<ToastContainer />

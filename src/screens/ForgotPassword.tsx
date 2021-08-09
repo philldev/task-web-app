@@ -1,19 +1,18 @@
-import { Link, RouteComponentProps, useNavigate } from "@reach/router"
-import { useEffect } from "react"
-import ForgotPassForm from "../components/AuthForm/ForgotPasswordForm"
-import { useAuth } from "../context/AuthContext"
-
+import { Link, RouteComponentProps, useNavigate } from '@reach/router'
+import { useEffect } from 'react'
+import ForgotPassForm from '../components/AuthForm/ForgotPasswordForm'
+import { useAuth } from '../context/AuthContext'
 
 const ForgotPassword = (props: RouteComponentProps) => {
-	const { session } = useAuth()
+	const { authUser } = useAuth()
 
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if (session) {
+		if (authUser) {
 			navigate('/')
 		}
-	}, [session, navigate])
+	}, [authUser, navigate])
 
 	return (
 		<div className='min-h-screen'>

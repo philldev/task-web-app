@@ -1,12 +1,12 @@
+import { Link } from '@reach/router'
+import { FC, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import * as yup from 'yup'
+import { useAuth } from '../../context/AuthContext'
+import useYupValidationResolver from '../../hooks/useYupValidationResolver'
 import Button from '../Button'
 import FormInput from '../FormInput'
-import * as yup from 'yup'
-import { useForm } from 'react-hook-form'
-import useYupValidationResolver from '../../hooks/useYupValidationResolver'
-import { FC, useState } from 'react'
-import supabase from '../../supabase'
 import Spinner from '../Spinner'
-import { Link } from '@reach/router'
 
 const LoginSchema = yup.object({
 	email: yup.string().required('Email is required').email('Email is Invalid'),
@@ -32,17 +32,18 @@ const LoginForm: FC = () => {
 		resolver,
 	})
 
+	const { signIn } = useAuth()
+
 	const onSubmit = async ({ email, password }: FormData) => {
 		if (status !== 'loading') {
 			setStatus('loading')
-			let { data, error } = await supabase.auth.signIn({ email, password })
-			if (error) {
+			try {
+				await signIn(email, password)
+				setStatus('success')
+			} catch (error) {
 				console.log(error.message)
 				setErrorMsg(error.message)
 				setStatus('error')
-			}
-			if (data) {
-				setStatus('success')
 			}
 		}
 	}

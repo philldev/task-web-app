@@ -1,8 +1,8 @@
-import { useTask } from '../../context/TaskContext'
+import { useTasks} from '../../context/TaskContext'
 import { ChevronDownIcon } from '../Icons/ChevronDown'
 
 const TaskInboxHeader = () => {
-	const { state } = useTask()
+	const { state } = useTasks()
 	return (
 		<div className='flex flex-col gap-2 border-b border-border-1 pb-2'>
 			<div className='flex items-center gap-2'>

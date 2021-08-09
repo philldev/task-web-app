@@ -4,15 +4,15 @@ import SignupForm from '../components/AuthForm/SignupForm'
 import { useAuth } from '../context/AuthContext'
 
 const Signup = (props: RouteComponentProps) => {
-	const { session } = useAuth()
+	const { authUser } = useAuth()
 
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if (session) {
+		if (authUser) {
 			navigate('/')
 		}
-	}, [session, navigate])
+	}, [authUser, navigate])
 
 	return (
 		<div className='min-h-screen'>

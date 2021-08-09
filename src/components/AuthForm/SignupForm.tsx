@@ -40,10 +40,9 @@ const SignupForm = () => {
 	const onSubmit = async ({ email, password, username }: FormData) => {
 		if (status !== 'loading') {
 			setStatus('loading')
-
 			try {
 				await signUp(email, password, { username })
-				setStatus('success')
+				// setStatus('success')
 			} catch (error) {
 				setStatus('error')
 				setErrorMsg(error.message)

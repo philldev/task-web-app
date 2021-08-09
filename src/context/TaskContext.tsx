@@ -7,6 +7,7 @@ import {
 	useReducer,
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import { useAuth } from './AuthContext'
 import { useFirebase } from './FirebaseContext'
 import { useUser } from './UserContext'
 
@@ -245,6 +246,14 @@ export const TasksProvider: FC = ({ children }) => {
 			fetchTasks()
 		}
 	}, [user, tasksRef])
+
+	const { authUser } = useAuth()
+
+	useEffect(() => {
+		if (!authUser) {
+			dispatch({ type: 'LOAD' })
+		}
+	}, [authUser])
 
 	return (
 		<TasksContext.Provider

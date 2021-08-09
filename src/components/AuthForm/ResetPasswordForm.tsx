@@ -28,6 +28,7 @@ const ResetPasswordForm: FC = () => {
 	const {
 		handleSubmit,
 		register,
+		reset,
 		formState: { errors },
 	} = useForm<FormData>({
 		reValidateMode: 'onChange',
@@ -52,6 +53,8 @@ const ResetPasswordForm: FC = () => {
 						type: 'SUCCESS',
 					},
 				})
+				setStatus('success')
+				reset()
 			} catch (error) {
 				console.log(error)
 				setErrorMsg(error.message ?? `Something went wrong!`)

@@ -36,6 +36,7 @@ const SignupForm = () => {
 	const onSubmit = async (formData: FormData) => {
 		if (status !== 'loading') {
 			setStatus('loading')
+
 			const { error, user } = await supabase.auth.signUp({
 				email: formData.email,
 				password: formData.password,
@@ -47,21 +48,45 @@ const SignupForm = () => {
 			}
 
 			if (user) {
-				const { error: profileErr } = await supabase
-					.from<Profile>('profiles')
-					.insert(
-						{
-							id: user.id,
-							email: formData.email,
-							username: formData.username,
-						},
-						{ returning: 'minimal' }
-					)
-				if (profileErr) {
-					setStatus('error')
-					setErrorMsg(profileErr.message)
+				let isVerified = user.confirmed_at !== undefined	
+
+				if (!isVerified) {
+					const { error: profileErr } = await supabase
+						.from<Profile>('profiles')
+						.update(
+							{
+								id: user.id,
+								email: formData.email,
+								username: formData.username,
+							},
+							{ returning: 'minimal' }
+						)
+						.eq('email', formData.email)
+					if (profileErr) {
+						setStatus('error')
+						setErrorMsg(profileErr.message)
+						console.log(profileErr)
+					} else {
+						setStatus('success')
+					}
 				} else {
-					setStatus('success')
+					const { error: profileErr } = await supabase
+						.from<Profile>('profiles')
+						.insert(
+							{
+								id: user.id,
+								email: formData.email,
+								username: formData.username,
+							},
+							{ returning: 'minimal' }
+						)
+					if (profileErr) {
+						setStatus('error')
+						setErrorMsg(profileErr.message)
+						console.log(profileErr)
+					} else {
+						setStatus('success')
+					}
 				}
 			}
 		}

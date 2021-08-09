@@ -7,6 +7,7 @@ export interface Profile {
 	username: string
 	email: string
 	avatarUrl?: string
+	verified? : boolean
 }
 
 type UserState = Profile | null

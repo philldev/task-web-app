@@ -27,8 +27,6 @@ const App = () => {
 	useEffect(() => {
 		const hash = window.location.hash.slice(1)
 
-		console.log(hash);
-
 		const queryParams = hash.split('&').reduce((res, item) => {
 			let parts = item.split('=')
 			return {

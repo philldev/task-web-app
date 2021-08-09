@@ -1,7 +1,6 @@
 import { Menu, Transition } from '@headlessui/react'
-import { FC, Fragment, useRef } from 'react'
-import { useState } from 'react'
-import { Task, useTasks} from '../../context/TaskContext'
+import { FC, Fragment, useRef, useState } from 'react'
+import { Task } from '../../context/TaskContext'
 import useOnClickOutside from '../../hooks/useClickOutside'
 import Checkbox from '../Checkbox'
 import DeleteTaskForm from './DeleteTaskForm'
@@ -9,20 +8,35 @@ import UpdateTaskForm from './UpdateTaskForm'
 
 interface Props {
 	task: Task
+	onUpdate: ({ task, id }: { task: Partial<Task>; id: string }) => void
+	onDelete: ({ id }: { id: string }) => void
 }
 
-const TaskItem: FC<Props> = ({ task }) => {
+const TaskItem: FC<Props> = ({ task, onUpdate, onDelete }) => {
 	const [editing, setEditing] = useState(false)
+	const [isEditOpen, setIsEditOpen] = useState(false)
+	const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
-	const { updateTask } = useTasks()
+	const taskId = task.id
+
+	const toggleEditModal = () => setIsEditOpen((p) => !p)
+	const toggleDeleteModal = () => setIsDeleteOpen((p) => !p)
+
+	const handleToggleIsCompleted = () => {
+		onUpdate({ task: { isCompleted: !task.isCompleted }, id: taskId })
+	}
+	const handleUpdateText = (text: string) => {
+		onUpdate({ task: { text }, id: taskId })
+	}
+	const handleDelete = () => {
+		onDelete({ id: taskId })
+	}
 
 	let ref = useRef(null)
+
 	useOnClickOutside(ref, () => {
 		setEditing(false)
 	})
-
-	const [isEditOpen, setIsEditOpen] = useState(false)
-	const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
 	return (
 		<>
@@ -40,7 +54,7 @@ const TaskItem: FC<Props> = ({ task }) => {
 					checked={task.isCompleted}
 					onClick={(e) => {
 						e.stopPropagation()
-						updateTask({ task: { ...task, isCompleted: !task.isCompleted } })
+						handleToggleIsCompleted()
 					}}
 				/>
 				<p
@@ -83,7 +97,7 @@ const TaskItem: FC<Props> = ({ task }) => {
 									className='absolute right-0 w-40 mt-2 origin-top-right bg-white divide-y divide-border-1 rounded-md shadow-lg focus:outline-none bg-bg-2 z-20'
 								>
 									<div className='px-1 py-1 '>
-										<Menu.Item onClick={() => setIsEditOpen(true)}>
+										<Menu.Item onClick={toggleEditModal}>
 											{({ active }) => (
 												<button
 													className={`${
@@ -112,7 +126,7 @@ const TaskItem: FC<Props> = ({ task }) => {
 										</Menu.Item>
 									</div>
 									<div className='px-1 py-1 '>
-										<Menu.Item onClick={() => setIsDeleteOpen(true)}>
+										<Menu.Item onClick={toggleDeleteModal}>
 											{({ active }) => (
 												<button
 													className={`${
@@ -148,13 +162,14 @@ const TaskItem: FC<Props> = ({ task }) => {
 			</div>
 			<UpdateTaskForm
 				isOpen={isEditOpen}
-				onClose={() => setIsEditOpen(false)}
+				onClose={toggleEditModal}
+				onUpdate={handleUpdateText}
 				{...{ task }}
 			/>
 			<DeleteTaskForm
 				isOpen={isDeleteOpen}
-				onClose={() => setIsDeleteOpen(false)}
-				{...{ task }}
+				onClose={toggleDeleteModal}
+				onDelete={handleDelete}
 			/>
 		</>
 	)

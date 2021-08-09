@@ -28,7 +28,7 @@ type Action =
 	| {
 			type: 'UPDATE'
 			payload: {
-				task: Task
+				task: Partial<Task>
 				id: string
 			}
 	  }
@@ -63,7 +63,13 @@ type State = {
 type TasksContextValue = {
 	state: State
 	addTask: ({ text }: { text: string }) => Promise<void>
-	updateTask: ({ task }: { task: Task }) => Promise<void>
+	updateTask: ({
+		task,
+		id,
+	}: {
+		task: Partial<Task>
+		id: string
+	}) => Promise<void>
 	deleteTask: ({ id }: { id: string }) => Promise<void>
 }
 
@@ -89,7 +95,7 @@ const tasksReducer = (state: State, action: Action): State => {
 			return {
 				...state,
 				tasks: state.tasks.map((t) =>
-					t.id === action.payload.id ? action.payload.task : t
+					t.id === action.payload.id ? { ...t, ...action.payload.task } : t
 				),
 			}
 		}
@@ -135,7 +141,6 @@ export const TasksProvider: FC = ({ children }) => {
 	)
 
 	const addTask = async ({ text }: { text: string }) => {
-		console.log(text)
 		const prevTasks = state.tasks
 		const tempTask: Task = {
 			createdAt: new Date().toISOString(),
@@ -144,7 +149,6 @@ export const TasksProvider: FC = ({ children }) => {
 			text,
 			userId: user!.id,
 		}
-		console.log(tempTask)
 
 		dispatch({
 			type: 'ADD',
@@ -189,22 +193,27 @@ export const TasksProvider: FC = ({ children }) => {
 			}
 		}
 	}
-	const updateTask = async ({ task }: { task: Task }) => {
+	const updateTask = async ({
+		task,
+		id,
+	}: {
+		task: Partial<Task>
+		id: string
+	}) => {
 		const prevTasks = state.tasks
 
 		dispatch({
 			type: 'UPDATE',
 			payload: {
-				id: task.id,
+				id,
 				task,
 			},
 		})
 
 		try {
-			await tasksRef.doc(task.id).update(task)
+			await tasksRef.doc(id).update(task)
 		} catch (error) {
 			if (error) {
-				console.log(error.message)
 				dispatch({
 					type: 'ERROR',
 					payload: {
@@ -221,8 +230,7 @@ export const TasksProvider: FC = ({ children }) => {
 			dispatch({ type: 'LOAD' })
 
 			try {
-				const snap = await tasksRef.where('userId', '==', user!.id)
-					.get()
+				const snap = await tasksRef.where('userId', '==', user!.id).get()
 				const data = snap.docs.map((t) => t.data() as Task)
 				dispatch({ type: 'LOADED', payload: { tasks: data } })
 			} catch (error) {

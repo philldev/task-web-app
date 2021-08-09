@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { Task, useTasks } from '../../context/TaskContext'
+import { Task } from '../../context/TaskContext'
 import useYupValidationResolver from '../../hooks/useYupValidationResolver'
 import Button from '../Button'
 import FormInput from '../FormInput'
@@ -17,10 +17,10 @@ interface Props {
 	task: Task
 	isOpen: boolean
 	onClose: () => void
+	onUpdate: (text: string) => void
 }
 
-const UpdateTaskForm: FC<Props> = ({ task, isOpen, onClose }) => {
-	const { updateTask } = useTasks()
+const UpdateTaskForm: FC<Props> = ({ task, isOpen, onClose, onUpdate }) => {
 
 	const {
 		register,
@@ -35,7 +35,7 @@ const UpdateTaskForm: FC<Props> = ({ task, isOpen, onClose }) => {
 	})
 
 	const onSubmit = (data: FormData) => {
-		updateTask({ task: { ...task, text: data.text } })
+		onUpdate(data.text)
 		onClose()
 	}
 

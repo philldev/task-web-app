@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { useTasks } from '../../context/TaskContext'
 import useYupValidationResolver from '../../hooks/useYupValidationResolver'
 import Button from '../Button'
 import FormInput from '../FormInput'
@@ -15,8 +14,11 @@ const NewTaskFormSchema = yup.object({
 
 type FormData = yup.InferType<typeof NewTaskFormSchema>
 
-const NewTaskForm: FC = () => {
-	const { addTask } = useTasks()
+interface Props {
+	onAdd : (text : string) => void
+}
+
+const NewTaskForm: FC<Props> = ({onAdd}) => {
 	const [isOpen, setIsOpen] = useState(false)
 
 	const {
@@ -29,7 +31,7 @@ const NewTaskForm: FC = () => {
 	})
 
 	const onSubmit = (data: FormData) => {
-		addTask({ text: data.text })
+		onAdd(data.text)
 		setIsOpen(false)
 	}
 

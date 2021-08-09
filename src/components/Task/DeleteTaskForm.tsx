@@ -1,19 +1,17 @@
 import { FC } from 'react'
-import { Task, useTasks } from '../../context/TaskContext'
 import Button from '../Button'
 import Modal from '../Modal'
 
 interface Props {
-	task: Task
 	isOpen: boolean
 	onClose: () => void
+	onDelete: () => void
 }
 
-const DeleteTaskForm: FC<Props> = ({ isOpen, onClose, task }) => {
-	const { deleteTask } = useTasks()
+const DeleteTaskForm: FC<Props> = ({ isOpen, onClose, onDelete }) => {
 
-	const onDelete = () => {
-		deleteTask({ id: task.id })
+	const handleDelete = () => {
+		onDelete()
 		onClose()
 	}
 
@@ -28,7 +26,7 @@ const DeleteTaskForm: FC<Props> = ({ isOpen, onClose, task }) => {
 				>
 					Cancel
 				</Button>
-				<Button onClick={onDelete} type='submit' variant='outlined' color='danger'>
+				<Button onClick={handleDelete} type='submit' variant='outlined' color='danger'>
 					Delete
 				</Button>
 			</div>

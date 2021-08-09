@@ -5,14 +5,17 @@ import reportWebVitals from './reportWebVitals'
 import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
 import App from './App'
+import { FirebaseProvider } from './context/FirebaseContext'
 
 ReactDOM.render(
 	<React.StrictMode>
-		<AuthProvider>
-			<ToastProvider>
-				<App />
-			</ToastProvider>
-		</AuthProvider>
+		<FirebaseProvider>
+			<AuthProvider>
+				<ToastProvider>
+					<App />
+				</ToastProvider>
+			</AuthProvider>
+		</FirebaseProvider>
 	</React.StrictMode>,
 	document.getElementById('root')
 )

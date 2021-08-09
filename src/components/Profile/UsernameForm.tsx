@@ -4,7 +4,6 @@ import { useUser } from '../../context/UserContext'
 import { useToast } from '../../context/ToastContext'
 import * as yup from 'yup'
 import useYupValidationResolver from '../../hooks/useYupValidationResolver'
-import supabase from '../../supabase'
 import Button from '../Button'
 import FormInput from '../FormInput'
 import Spinner from '../Spinner'
@@ -30,7 +29,6 @@ const UsernameForm = () => {
 		formState: { errors },
 	} = useForm<UsernameFormData>({
 		resolver,
-
 		defaultValues: {
 			username: user?.username,
 		},
@@ -38,11 +36,17 @@ const UsernameForm = () => {
 	const onSubmit = async (formData: UsernameFormData) => {
 		if (status !== 'loading' && getValues('username') !== user?.username) {
 			setStatus('loading')
-			const { error, data } = await supabase
-				.from('profiles')
-				.update({ ...formData })
-				.match({ id: user!.id })
-			if (error) {
+			setStatus('success')
+			dispatch({
+				TYPE: 'SUCCESS',
+				PAYLOAD: {
+					message: 'Username successfully updated',
+					type: 'SUCCESS',
+				},
+			})
+			try {
+				await updateUserDetails({ username: formData.username })
+			} catch (error) {
 				setStatus('error')
 				dispatch({
 					TYPE: 'ERROR',
@@ -51,18 +55,6 @@ const UsernameForm = () => {
 						type: 'ERROR',
 					},
 				})
-			}
-
-			if (data) {
-				setStatus('success')
-				dispatch({
-					TYPE: 'SUCCESS',
-					PAYLOAD: {
-						message: 'Username successfully updated',
-						type: 'SUCCESS',
-					},
-				})
-				updateUserDetails({ username: formData.username })
 			}
 		}
 	}

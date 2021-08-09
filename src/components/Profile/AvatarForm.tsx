@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useEffect } from 'react'
 import { useToast } from '../../context/ToastContext'
-import firebase from '../../firebase'
+import {firebase} from '../../firebase'
 
 const FILE_SIZE = 1048576 // 1mb
 const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']

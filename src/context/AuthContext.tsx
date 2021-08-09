@@ -4,9 +4,10 @@ import React, {
 	useContext,
 	useEffect,
 	useMemo,
-	useState
+	useState,
 } from 'react'
-import firebase from '../firebase'
+import { firebase } from '../firebase'
+import { useFirebase } from './FirebaseContext'
 import { Profile } from './UserContext'
 
 type AuthState = firebase.User | null
@@ -28,53 +29,59 @@ type ContextValue = {
 const AuthCtx = createContext<ContextValue | undefined>(undefined)
 
 export const AuthProvider: FC = ({ children }) => {
+	const firebase = useFirebase()
 	const [authUser, setAuthUser] = useState<AuthState>(null)
 	const [status, setStatus] = useState<FetchStatus>('loading')
 
-	async function signUp(
-		email: string,
-		password: string,
-		data: Partial<Profile>
-	) {
-		try {
-			const { user } = await firebase
-				.auth()
-				.createUserWithEmailAndPassword(email, password)
-			if (user) {
-				await firebase
-					.firestore()
-					.collection('profiles')
-					.doc(user?.uid)
-					.set({
-						id: user?.uid,
-						email: user?.email,
-						username: data.username,
-					} as Partial<Profile>)
-			} else {
-				throw new Error('User not found')
+	const signUp = useMemo(
+		() => async (email: string, password: string, data: Partial<Profile>) => {
+			try {
+				const { user } = await firebase
+					.auth()
+					.createUserWithEmailAndPassword(email, password)
+				if (user) {
+					await firebase
+						.firestore()
+						.collection('profiles')
+						.doc(user?.uid)
+						.set({
+							id: user?.uid,
+							email: user?.email,
+							username: data.username,
+						} as Partial<Profile>)
+				} else {
+					throw new Error('User not found')
+				}
+			} catch (error) {
+				throw error
 			}
-		} catch (error) {
-			throw error
-		}
-	}
+		},
+		[firebase]
+	)
 
-	async function signIn(email: string, password: string) {
-		try {
-			await firebase.auth().signInWithEmailAndPassword(email, password)
-		} catch (error) {
-			throw error
-		}
-	}
+	const signIn = useMemo(
+		() => async (email: string, password: string) => {
+			try {
+				await firebase.auth().signInWithEmailAndPassword(email, password)
+			} catch (error) {
+				throw error
+			}
+		},
+		[firebase]
+	)
 
-	async function signOut() {
-		try {
-			await firebase.auth().signOut()
-			console.log(firebase.auth().currentUser)
-		} catch (error) {
-			console.log(error)
-			throw error
-		}
-	}
+	const signOut = useMemo(
+		() => async () => {
+			try {
+				await firebase.auth().signOut()
+				console.log(firebase.auth().currentUser)
+			} catch (error) {
+				console.log(error)
+				throw error
+			}
+		},
+		[firebase]
+	)
 
 	useEffect(() => {
 		let unsubscribe = firebase.auth().onAuthStateChanged((user) => {
@@ -90,7 +97,7 @@ export const AuthProvider: FC = ({ children }) => {
 		return () => {
 			unsubscribe()
 		}
-	}, [])
+	}, [firebase])
 
 	const value = useMemo(
 		() => ({
@@ -100,7 +107,7 @@ export const AuthProvider: FC = ({ children }) => {
 			signIn,
 			signOut,
 		}),
-		[authUser, status]
+		[authUser, status, signIn, signOut, signUp]
 	)
 
 	return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>

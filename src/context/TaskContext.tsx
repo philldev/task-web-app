@@ -1,6 +1,13 @@
-import { createContext, FC, useContext, useEffect, useReducer } from 'react'
+import {
+	createContext,
+	FC,
+	useContext,
+	useEffect,
+	useMemo,
+	useReducer,
+} from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import firebase from '../firebase'
+import { useFirebase } from './FirebaseContext'
 import { useUser } from './UserContext'
 
 export interface Task {
@@ -114,14 +121,18 @@ const tasksReducer = (state: State, action: Action): State => {
 	}
 }
 
-const tasksRef = firebase.firestore().collection('tasks')
-
 export const TasksProvider: FC = ({ children }) => {
+	const firebase = useFirebase()
 	const { user } = useUser()
 	const [state, dispatch] = useReducer(tasksReducer, {
 		status: 'loading',
 		tasks: [],
 	})
+
+	const tasksRef = useMemo(
+		() => firebase.firestore().collection('tasks'),
+		[firebase]
+	)
 
 	const addTask = async ({ text }: { text: string }) => {
 		console.log(text)
@@ -210,10 +221,7 @@ export const TasksProvider: FC = ({ children }) => {
 			dispatch({ type: 'LOAD' })
 
 			try {
-				const snap = await firebase
-					.firestore()
-					.collection('tasks')
-					.where('userId', '==', user!.id)
+				const snap = await tasksRef.where('userId', '==', user!.id)
 					.get()
 				const data = snap.docs.map((t) => t.data() as Task)
 				dispatch({ type: 'LOADED', payload: { tasks: data } })
@@ -228,7 +236,7 @@ export const TasksProvider: FC = ({ children }) => {
 		if (user) {
 			fetchTasks()
 		}
-	}, [user])
+	}, [user, tasksRef])
 
 	return (
 		<TasksContext.Provider

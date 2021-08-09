@@ -1,12 +1,11 @@
+import { FC, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import * as yup from 'yup'
+import { useFirebase } from '../../context/FirebaseContext'
+import useYupValidationResolver from '../../hooks/useYupValidationResolver'
 import Button from '../Button'
 import FormInput from '../FormInput'
-import * as yup from 'yup'
-import { useForm } from 'react-hook-form'
-import useYupValidationResolver from '../../hooks/useYupValidationResolver'
-import { FC, useState } from 'react'
-import supabase from '../../supabase'
 import Spinner from '../Spinner'
-import { useToast } from '../../context/ToastContext'
 
 const ForgotPassSchema = yup.object({
 	email: yup.string().required('Email is required').email('Email is Invalid'),
@@ -16,6 +15,7 @@ type FormData = yup.InferType<typeof ForgotPassSchema>
 type StatusState = 'loading' | 'idle' | 'success' | 'error'
 
 const ForgotPassForm: FC = () => {
+	const firebase = useFirebase()
 	const [status, setStatus] = useState<StatusState>('idle')
 	const [errorMsg, setErrorMsg] = useState<string | null>(null)
 	const resolver = useYupValidationResolver(ForgotPassSchema)
@@ -29,27 +29,17 @@ const ForgotPassForm: FC = () => {
 		resolver,
 	})
 
-	const { dispatch } = useToast()
-
 	const onSubmit = async ({ email }: FormData) => {
+		console.log(email)
 		if (status !== 'loading') {
 			setStatus('loading')
-			let { data, error } = await supabase.auth.api.resetPasswordForEmail(email)
-			if (error) {
-				console.log(error.message)
-				setErrorMsg(error.message)
-				setStatus('error')
-			}
-			if (data) {
+			try {
+				await firebase.auth().sendPasswordResetEmail(email)
 				setStatus('success')
-				dispatch({
-					TYPE: 'SUCCESS',
-					PAYLOAD: {
-						message: `We've sent you a recovery password Link. Please check your email`,
-						type: 'SUCCESS',
-					},
-				})
 				reset()
+			} catch (error) {
+				setStatus('error')
+				setErrorMsg(error.message ?? 'Something went wrong!')
 			}
 		}
 	}
@@ -72,11 +62,16 @@ const ForgotPassForm: FC = () => {
 					Send Recovery Email
 				</Button>
 			</div>
-			{status === 'error' && (
+			{status === 'error' ? (
 				<div className='mx-6 bg-bg-danger text-accent-danger p-2 rounded-md'>
 					{errorMsg}
 				</div>
-			)}
+			) : null}
+			{status === 'success' ? (
+				<div className='mx-6 bg-bg-success text-accent-success p-2 rounded-md'>
+					We've successfully sent you a password reset link to your email!
+				</div>
+			) : null}
 		</form>
 	)
 }

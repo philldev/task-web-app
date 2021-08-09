@@ -1,6 +1,13 @@
-import { createContext, FC, useContext, useEffect, useState } from 'react'
-import firebase from '../firebase'
+import {
+	createContext,
+	FC,
+	useContext,
+	useEffect,
+	useMemo,
+	useState,
+} from 'react'
 import { useAuth } from './AuthContext'
+import { useFirebase } from './FirebaseContext'
 
 export interface Profile {
 	id: string
@@ -20,17 +27,19 @@ type ContextValue = {
 const UserCtx = createContext<ContextValue | undefined>(undefined)
 
 export const UserProvider: FC = ({ children }) => {
+	const firebase = useFirebase()
 	const { authUser } = useAuth()
 	const [user, setUser] = useState<UserState>(null)
 	const [isLoading, setIsLoading] = useState(true)
 
+	const profileRef = useMemo(
+		() => firebase.firestore().collection('profiles'),
+		[firebase]
+	)
+
 	const updateUserDetails = async (data: Partial<Profile>) => {
 		try {
-			await firebase
-				.firestore()
-				.collection('profiles')
-				.doc(user?.id!)
-				.update(data)
+			await profileRef.doc(user?.id!).update(data)
 			setUser((prev) =>
 				prev
 					? {
@@ -48,12 +57,7 @@ export const UserProvider: FC = ({ children }) => {
 
 	useEffect(() => {
 		const fetchUser = async () => {
-			const userProfileDoc = await firebase
-				.firestore()
-				.collection('profiles')
-				.doc(authUser?.uid)
-				.get()
-			console.log(userProfileDoc.exists)
+			const userProfileDoc = await profileRef.doc(authUser?.uid).get()
 			if (userProfileDoc.exists) {
 				setUser(userProfileDoc.data() as Profile)
 				setIsLoading(false)
@@ -63,7 +67,7 @@ export const UserProvider: FC = ({ children }) => {
 		if (authUser) {
 			fetchUser()
 		}
-	}, [authUser])
+	}, [authUser, profileRef])
 
 	return (
 		<UserCtx.Provider

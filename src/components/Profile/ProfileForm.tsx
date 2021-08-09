@@ -1,5 +1,5 @@
+import { useAuth } from '../../context/AuthContext'
 import { useUser } from '../../context/UserContext'
-import supabase from '../../supabase'
 import FormInput from '../FormInput'
 import Spinner from '../Spinner'
 import AvatarForm from './AvatarForm'
@@ -7,9 +7,10 @@ import UsernameForm from './UsernameForm'
 
 const ProfileForm = () => {
 	const { user, userLoaded } = useUser()
+	const {signOut} =useAuth()
 
 	const logout = async () => {
-		await supabase.auth.signOut()
+		await signOut()
 	}
 
 	if (!userLoaded) {

@@ -36,16 +36,16 @@ const UsernameForm = () => {
 	const onSubmit = async (formData: UsernameFormData) => {
 		if (status !== 'loading' && getValues('username') !== user?.username) {
 			setStatus('loading')
-			setStatus('success')
-			dispatch({
-				TYPE: 'SUCCESS',
-				PAYLOAD: {
-					message: 'Username successfully updated',
-					type: 'SUCCESS',
-				},
-			})
 			try {
 				await updateUserDetails({ username: formData.username })
+				setStatus('success')
+				dispatch({
+					TYPE: 'SUCCESS',
+					PAYLOAD: {
+						message: 'Username successfully updated',
+						type: 'SUCCESS',
+					},
+				})
 			} catch (error) {
 				setStatus('error')
 				dispatch({

@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useEffect } from 'react'
 import { useToast } from '../../context/ToastContext'
-import {firebase} from '../../firebase'
+import { firebase } from '../../firebase'
 
 const FILE_SIZE = 1048576 // 1mb
 const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']
@@ -35,11 +35,13 @@ type StatusState = 'loading' | 'idle' | 'success' | 'error'
 
 const AvatarForm = () => {
 	const { user, updateUserDetails } = useUser()
-	const [tempImgUrl, setTempImgUrl] = useState(user?.avatarUrl)
+	
+	const [tempImgUrl, setTempImgUrl] = useState<string | null>(null)
 	const [status, setStatus] = useState<StatusState>('idle')
 	const [uploadProgress, setUploadProgress] = useState<number | null>(null)
 	const { dispatch } = useToast()
 	const resolver = useYupValidationResolver(AvatarFormSchema)
+	
 	const {
 		register,
 		handleSubmit,
@@ -86,6 +88,7 @@ const AvatarForm = () => {
 							setStatus('success')
 							setStatus('idle')
 							setUploadProgress(null)
+							setTempImgUrl(null)
 						} catch (error) {
 							setStatus('error')
 							console.log(error.message)
@@ -127,10 +130,10 @@ const AvatarForm = () => {
 						}}
 					/>
 				) : null}
-				{tempImgUrl ? (
+				{tempImgUrl || user?.avatarUrl ? (
 					<img
 						className='h-20 w-20 object-cover rounded-full border-2 border-accent-primary'
-						src={tempImgUrl}
+						src={tempImgUrl! ?? user?.avatarUrl}
 						alt='avatar'
 					/>
 				) : (
@@ -150,7 +153,7 @@ const AvatarForm = () => {
 					</svg>
 				)}
 			</div>
-			{user && user.avatarUrl !== tempImgUrl ? (
+			{user && tempImgUrl ? (
 				<div
 					className={`flex absolute bottom-0 p-6 w-full left-0 border-border-1 border-t`}
 				>
@@ -159,7 +162,7 @@ const AvatarForm = () => {
 						variant='outlined'
 						color='secondary'
 						className='mr-2'
-						onClick={() => setTempImgUrl(user.avatarUrl)}
+						onClick={() => setTempImgUrl(null)}
 					>
 						Cancel
 					</Button>

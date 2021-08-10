@@ -1,14 +1,19 @@
 import { Menu, Transition } from '@headlessui/react'
-import { DotsHorizontalIcon, EyeOffIcon } from '@heroicons/react/outline'
+import {
+	DotsHorizontalIcon,
+	EyeIcon,
+	EyeOffIcon,
+} from '@heroicons/react/outline'
 import { Fragment } from 'react'
+import { useTaskInbox } from './TaskInbox'
 
 const TaskInboxOptions = () => {
+	const { isShowCompleted, toggleShowCompleted } = useTaskInbox()
 	return (
 		<Menu>
 			{({ open }) => (
 				<>
-					<Menu.Button
-					>
+					<Menu.Button>
 						<DotsHorizontalIcon className='h-6 w-6' />
 					</Menu.Button>
 					<Transition
@@ -27,14 +32,19 @@ const TaskInboxOptions = () => {
 							<Menu.Item>
 								{({ active }) => (
 									<button
+										onClick={toggleShowCompleted}
 										className={`${
 											active
 												? 'bg-accent-primary bg-opacity-10 text-text-1'
 												: 'text-gray-900'
 										} group flex items-center rounded-md w-full px-2 py-2 gap-2 text-sm`}
 									>
-										<EyeOffIcon className='w-4 h-4' />
-										Hide Completed
+										{isShowCompleted ? (
+											<EyeOffIcon className='w-4 h-4' />
+										) : (
+											<EyeIcon className='w-4 h-4' />
+										)}
+										{isShowCompleted ? 'Hide Completed' : 'Show Completed'}
 									</button>
 								)}
 							</Menu.Item>

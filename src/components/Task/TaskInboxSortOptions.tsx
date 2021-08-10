@@ -1,5 +1,6 @@
 import { Menu } from '@headlessui/react'
 import { CheckIcon, SortDescendingIcon } from '@heroicons/react/outline'
+import MenuButton from '../DropdownMenu/MenuButton'
 import MenuItem from '../DropdownMenu/MenuItem'
 import MenuItems from '../DropdownMenu/MenuItems'
 import { useTaskInbox } from './TaskInbox'
@@ -9,9 +10,9 @@ const TaskInboxSortOptions = () => {
 	return (
 		<Menu>
 			<div className='relative'>
-				<Menu.Button>
+				<MenuButton>
 					<SortDescendingIcon className='w-6 h-6 text-text-2 hover:text-text-1 transition-all' />
-				</Menu.Button>
+				</MenuButton>
 				<MenuItems>
 					<MenuItem onClick={() => selectSort('text')}>
 						Sort alphabetically

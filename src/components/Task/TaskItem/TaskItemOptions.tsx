@@ -2,8 +2,9 @@ import { Menu } from '@headlessui/react'
 import {
 	DotsHorizontalIcon,
 	PencilIcon,
-	TrashIcon
+	TrashIcon,
 } from '@heroicons/react/outline'
+import MenuButton from '../../DropdownMenu/MenuButton'
 import MenuItem from '../../DropdownMenu/MenuItem'
 import MenuItems from '../../DropdownMenu/MenuItems'
 
@@ -17,13 +18,13 @@ const TaskItemOptions = ({ openDeleteModal, openEditModal }: Props) => {
 		<Menu>
 			{({ open }) => (
 				<>
-					<Menu.Button
+					<MenuButton
 						className={`group-hover:opacity-100 ${
 							open ? 'opacity-100' : 'opacity-0'
-						} absolute right-2 transition-all`}
+						} absolute right-2 top-1 transition-all`}
 					>
 						<DotsHorizontalIcon className='h-6 w-6' />
-					</Menu.Button>
+					</MenuButton>
 					<MenuItems>
 						<MenuItem onClick={openEditModal}>
 							<PencilIcon className='h-4 w-4' />

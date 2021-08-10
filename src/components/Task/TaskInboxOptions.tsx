@@ -4,6 +4,7 @@ import {
 	EyeIcon,
 	EyeOffIcon,
 } from '@heroicons/react/outline'
+import MenuButton from '../DropdownMenu/MenuButton'
 import MenuItem from '../DropdownMenu/MenuItem'
 import MenuItems from '../DropdownMenu/MenuItems'
 import { useTaskInbox } from './TaskInbox'
@@ -13,9 +14,9 @@ const TaskInboxOptions = () => {
 	return (
 		<Menu>
 			<div className='relative'>
-				<Menu.Button>
+				<MenuButton>
 					<DotsHorizontalIcon className='h-6 w-6 text-text-2 hover:text-text-1 transition-all' />
-				</Menu.Button>
+				</MenuButton>
 				<MenuItems>
 					<MenuItem onClick={toggleShowCompleted}>
 						{isShowCompleted ? (

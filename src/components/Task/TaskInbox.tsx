@@ -38,7 +38,7 @@ const TaskInbox = () => {
 				>
 					<TaskInboxHeader />
 					<div className='pt-4'>
-						<div className='grid gap-4'>
+						<div className='grid gap-3'>
 							{unCompleteTasks.map((task) => (
 								<TaskItem
 									key={task.id}

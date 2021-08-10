@@ -1,6 +1,6 @@
 import { FC } from 'react'
-import Button from '../Button'
-import Modal from '../Modal'
+import Button from '../../Button'
+import Modal from '../../Modal'
 
 interface Props {
 	isOpen: boolean

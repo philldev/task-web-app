@@ -1,11 +1,11 @@
 import { FC, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { Task } from '../../context/TaskContext'
-import useYupValidationResolver from '../../hooks/useYupValidationResolver'
-import Button from '../Button'
-import FormInput from '../FormInput'
-import Modal from '../Modal'
+import { Task } from '../../../context/TaskContext'
+import useYupValidationResolver from '../../../hooks/useYupValidationResolver'
+import Button from '../../Button'
+import FormInput from '../../FormInput'
+import Modal from '../../Modal'
 
 const NewTaskFormSchema = yup.object({
 	text: yup.string().required().max(100, 'Maximum characters is 100'),

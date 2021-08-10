@@ -5,7 +5,7 @@ import { NewTaskProvider } from './NewTask/NewTaskContext'
 import NewTaskFixedButton from './NewTask/NewTaskFixedButton'
 import NewTaskForm from './NewTask/NewTaskForm'
 import TaskInboxHeader from './TaskInboxHeader'
-import TaskItem from './TaskItem'
+import { TaskItem } from './TaskItem'
 
 const TaskInbox = () => {
 	const { state, updateTask, deleteTask } = useTasks()

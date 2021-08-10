@@ -29,7 +29,7 @@ const TaskInbox = () => {
 	const toggleShowCompleted = () => setIsShowCompleted((p) => !p)
 
 	return (
-		<div className='px-2 pt-4 flex-1 flex-shrink-0 flex-grow max-w-lg w-full mx-auto'>
+		<div className='pt-4 flex-1 flex-shrink-0 flex-grow max-w-lg w-full mx-auto'>
 			{state.status === 'loading' ? (
 				<Spinner size='lg' className='mx-auto' />
 			) : (

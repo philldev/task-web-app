@@ -1,7 +1,7 @@
 import { createContext } from 'react'
 import { useContext } from 'react'
 import { useState } from 'react'
-import { useTasks } from '../../context/TaskContext'
+import { Task, useTasks } from '../../context/TaskContext'
 import Spinner from '../Spinner'
 import NewTaskButton from './NewTask/NewTaskButton'
 import { NewTaskProvider } from './NewTask/NewTaskContext'
@@ -11,7 +11,14 @@ import TaskInboxHeader from './TaskInboxHeader'
 import { TaskItem } from './TaskItem'
 
 const TaskInboxContext = createContext<
-	{ isShowCompleted: boolean; toggleShowCompleted: () => void } | undefined
+	| {
+			isShowCompleted: boolean
+			toggleShowCompleted: () => void
+			selectSort: (sort: SortOptions) => void
+			toggleSortType: () => void
+			sortBy: SortOptions
+	  }
+	| undefined
 >(undefined)
 
 export const useTaskInbox = () => {
@@ -20,10 +27,50 @@ export const useTaskInbox = () => {
 	return ctx
 }
 
+type SortOptions = keyof Omit<Task, 'id' | 'createdAt'> | null
+type SortType = 'Ascending' | 'Descending'
+
 const TaskInbox = () => {
 	const { state, updateTask, deleteTask } = useTasks()
-	const unCompleteTasks = state.tasks.filter((t) => !t.isCompleted)
-	const completedTasks = state.tasks.filter((t) => t.isCompleted)
+	const [sortBy, setSortBy] = useState<SortOptions>(null)
+	const [sortType, setSortType] = useState<SortType>('Ascending')
+
+	const selectSort = (sort: SortOptions) => {
+		setSortBy(() => {
+			if (sort === sortBy) return null
+			else return sort
+		})
+	}
+
+	const toggleSortType = () =>
+		setSortType((p) => (p === 'Ascending' ? 'Descending' : 'Ascending'))
+
+	const handleSort = (a: Task, b: Task): number => {
+		if (sortBy === null) return 0
+		let sortedPropA = a[sortBy]
+		let sortedPropB = b[sortBy]
+		if (sortType === 'Ascending') {
+			if (sortedPropA > sortedPropB) {
+				return 1
+			} else {
+				return -1
+			}
+		} else {
+			if (sortedPropA < sortedPropB) {
+				return 1
+			} else {
+				return -1
+			}
+		}
+	}
+
+	const unCompleteTasks = state.tasks
+		.filter((t) => !t.isCompleted)
+		.sort(handleSort)
+
+	const completedTasks = state.tasks
+		.filter((t) => t.isCompleted)
+		.sort(handleSort)
 
 	const [isShowCompleted, setIsShowCompleted] = useState<boolean>(false)
 	const toggleShowCompleted = () => setIsShowCompleted((p) => !p)
@@ -34,7 +81,13 @@ const TaskInbox = () => {
 				<Spinner size='lg' className='mx-auto' />
 			) : (
 				<TaskInboxContext.Provider
-					value={{ toggleShowCompleted, isShowCompleted }}
+					value={{
+						toggleShowCompleted,
+						isShowCompleted,
+						selectSort,
+						sortBy,
+						toggleSortType,
+					}}
 				>
 					<TaskInboxHeader />
 					<div className='pt-4'>
@@ -57,7 +110,10 @@ const TaskInbox = () => {
 									/>
 								))}
 							{!isShowCompleted && completedTasks.length > 0 ? (
-								<button onClick={toggleShowCompleted} className=' text-text-2 transition-all items-center flex gap-4 p-2 cursor-pointer hover:bg-accent-primary hover:bg-opacity-5'>
+								<button
+									onClick={toggleShowCompleted}
+									className=' text-text-2 transition-all items-center flex gap-4 p-2 cursor-pointer hover:bg-accent-primary hover:bg-opacity-5'
+								>
 									{completedTasks.length} completed{' '}
 									{`task${completedTasks.length > 1 ? 's' : ''}`}
 								</button>

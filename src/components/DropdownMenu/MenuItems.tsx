@@ -14,7 +14,7 @@ const MenuItems: FC = ({ children }) => {
 		>
 			<Menu.Items
 				unmount
-				className='absolute right-0 top-8 w-40 origin-top-right bg-white divide-y divide-border-1 rounded-md shadow-lg focus:outline-none bg-bg-2 z-20'
+				className='absolute right-0 top-8 w-48 origin-top-right bg-white divide-y divide-border-1 rounded-md shadow-lg focus:outline-none bg-bg-2 z-20'
 			>
 				{children}
 			</Menu.Items>

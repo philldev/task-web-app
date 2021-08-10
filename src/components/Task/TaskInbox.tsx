@@ -10,7 +10,7 @@ import TaskItem from './TaskItem'
 const TaskInbox = () => {
 	const { state, updateTask, deleteTask } = useTasks()
 	return (
-		<div className='px-6 pt-5 flex-1 flex-shrink-0 flex-grow max-w-lg w-full mx-auto'>
+		<div className='px-2 pt-4 flex-1 flex-shrink-0 flex-grow max-w-lg w-full mx-auto'>
 			{state.status === 'loading' ? (
 				<Spinner size='lg' className='mx-auto' />
 			) : (

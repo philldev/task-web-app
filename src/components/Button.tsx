@@ -19,8 +19,8 @@ type ButtonClassName = {
 
 const baseClassName =
 	'h-9 px-4 items-center justify-center flex text-base font-bold rounded-md'
-const baseOutlined = 'border-2 bg-transparent'
-const baseTransparent = 'bg-transparent border-2 border-transparent'
+const baseOutlined = 'border bg-transparent'
+const baseTransparent = 'bg-transparent border border-transparent'
 
 const buttonClassName: ButtonClassName = {
 	primary: {

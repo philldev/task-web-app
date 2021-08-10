@@ -38,7 +38,7 @@ const NewTaskForm: FC = () => {
 
 	return (
 		<>
-			<Modal onClose={toggle} {...{ isOpen }}>
+			<Modal title='Add new task' onClose={toggle} {...{ isOpen }}>
 				<form
 					autoComplete='off'
 					onSubmit={handleSubmit(onSubmit)}

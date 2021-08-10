@@ -20,7 +20,7 @@ const TaskInboxHeader = () => {
 									strokeLinecap='round'
 									strokeLinejoin='round'
 									strokeWidth={2}
-									d='M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z'
+									d='M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z'
 								/>
 							</svg>
 						</Menu.Button>
@@ -34,8 +34,7 @@ const TaskInboxHeader = () => {
 							leaveTo='transform opacity-0 scale-95'
 						>
 							<Menu.Items
-								unmount={false}
-								className='absolute right-0 w-40 mt-2 origin-top-right bg-white divide-y divide-border-1 rounded-md shadow-lg focus:outline-none bg-bg-2 z-20'
+								className='absolute right-0 w-40 origin-top-right bg-white divide-y divide-border-1 rounded-md shadow-lg focus:outline-none bg-bg-2 z-20'
 							>
 								<div className='px-1 py-1 '>
 									<Menu.Item>

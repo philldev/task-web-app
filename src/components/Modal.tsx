@@ -14,7 +14,7 @@ const Modal = ({ title, isOpen, onClose, children }: Props) => {
 			<Dialog
 				as='div'
 				className='fixed inset-0 z-10 overflow-y-auto'
-				{...{ onClose, }}
+				{...{ onClose }}
 				open={isOpen}
 			>
 				<div className='min-h-screen px-4 text-center'>
@@ -48,7 +48,23 @@ const Modal = ({ title, isOpen, onClose, children }: Props) => {
 						leaveFrom='opacity-100 scale-100'
 						leaveTo='opacity-0 scale-95'
 					>
-						<div className='inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-bg-2 border border-border-1 shadow-xl rounded-2xl'>
+						<div className='relative inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-bg-2 border border-border-1 shadow-xl rounded-2xl'>
+							<button onClick={onClose} className='w-6 h-6 absolute top-6 right-6'>
+								<svg
+									xmlns='http://www.w3.org/2000/svg'
+									className='h-6 w-6'
+									fill='none'
+									viewBox='0 0 24 24'
+									stroke='currentColor'
+								>
+									<path
+										strokeLinecap='round'
+										strokeLinejoin='round'
+										strokeWidth={2}
+										d='M6 18L18 6M6 6l12 12'
+									/>
+								</svg>
+							</button>
 							{title && (
 								<Dialog.Title
 									as='h3'

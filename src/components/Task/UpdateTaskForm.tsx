@@ -21,11 +21,11 @@ interface Props {
 }
 
 const UpdateTaskForm: FC<Props> = ({ task, isOpen, onClose, onUpdate }) => {
-
 	const {
 		register,
 		handleSubmit,
 		reset,
+		watch,
 		formState: { errors },
 	} = useForm<FormData>({
 		resolver: useYupValidationResolver(NewTaskFormSchema),
@@ -54,19 +54,22 @@ const UpdateTaskForm: FC<Props> = ({ task, isOpen, onClose, onUpdate }) => {
 					className='flex flex-col gap-4'
 				>
 					<FormInput {...register('text')} error={errors.text?.message} />
-					<div className='flex gap-4 justify-end'>
-						<Button
-							type='button'
-							onClick={() => onClose()}
-							variant='outlined'
-							color='secondary'
-						>
-							Cancel
-						</Button>
-						<Button type='submit' variant='outlined'>
-							Update
-						</Button>
-					</div>
+
+					{watch('text') !== task.text ? (
+						<div className='flex gap-4 justify-end'>
+							<Button
+								type='button'
+								onClick={() => onClose()}
+								variant='outlined'
+								color='secondary'
+							>
+								Cancel
+							</Button>
+							<Button type='submit' variant='outlined'>
+								Update
+							</Button>
+						</div>
+					) : null}
 				</form>
 			</Modal>
 		</>

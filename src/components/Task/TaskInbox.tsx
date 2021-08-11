@@ -45,24 +45,27 @@ const TaskInbox = () => {
 	const toggleSortType = () =>
 		setSortType((p) => (p === 'Ascending' ? 'Descending' : 'Ascending'))
 
-	const handleSort = (a: Task, b: Task): number => {
-		if (sortBy === null) return 0
-		let sortedPropA = a[sortBy]
-		let sortedPropB = b[sortBy]
-		if (sortType === 'Ascending') {
-			if (sortedPropA > sortedPropB) {
-				return 1
-			} else {
-				return -1
-			}
-		} else {
-			if (sortedPropA < sortedPropB) {
-				return 1
-			} else {
-				return -1
-			}
-		}
-	}
+	const handleSort =
+		sortBy !== null
+			? (a: Task, b: Task): number => {
+					if (sortBy === null) return 0
+					let sortedPropA = a[sortBy]
+					let sortedPropB = b[sortBy]
+					if (sortType === 'Ascending') {
+						if (sortedPropA > sortedPropB) {
+							return 1
+						} else {
+							return -1
+						}
+					} else {
+						if (sortedPropA < sortedPropB) {
+							return 1
+						} else {
+							return -1
+						}
+					}
+			  }
+			: undefined
 
 	const unCompleteTasks = state.tasks
 		.filter((t) => !t.isCompleted)
@@ -76,7 +79,7 @@ const TaskInbox = () => {
 	const toggleShowCompleted = () => setIsShowCompleted((p) => !p)
 
 	return (
-		<div className='pt-4 flex-1 flex-shrink-0 flex-grow max-w-lg w-full mx-auto'>
+		<div className='pt-4 flex-1 flex-shrink-0 flex-grow px-2'>
 			{state.status === 'loading' ? (
 				<Spinner size='lg' className='mx-auto' />
 			) : (

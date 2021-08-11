@@ -6,6 +6,7 @@ import { UserProvider } from './context/UserContext'
 import { Dashboard, Login, Profile, Signup, Splash } from './screens'
 import ForgotPassword from './screens/ForgotPassword'
 import ResetPassword from './screens/ResetPassword'
+import AppContainer from './components/AppContainer'
 
 const App = () => {
 	const { status } = useAuth()
@@ -15,18 +16,20 @@ const App = () => {
 			{status === 'loading' ? (
 				<Splash />
 			) : (
-				<UserProvider>
-					<TasksProvider>
-						<Router className='min-h-screen'>
-							<Dashboard path='/' />
-							<Profile path='/profile' />
-							<Signup path='/signup' />
-							<Login path='/login' />
-							<ForgotPassword path='/forgot-password' />
-							<ResetPassword path='/reset-password' />
-						</Router>
-					</TasksProvider>
-				</UserProvider>
+				<AppContainer>
+					<UserProvider>
+						<TasksProvider>
+							<Router className='min-h-screen'>
+								<Dashboard path='/' />
+								<Profile path='/profile' />
+								<Signup path='/signup' />
+								<Login path='/login' />
+								<ForgotPassword path='/forgot-password' />
+								<ResetPassword path='/reset-password' />
+							</Router>
+						</TasksProvider>
+					</UserProvider>
+				</AppContainer>
 			)}
 			<ToastContainer />
 		</div>

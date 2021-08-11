@@ -15,14 +15,14 @@ const ProfileForm = () => {
 
 	if (!userLoaded) {
 		return (
-			<div className='max-w-lg w-full mx-auto flex flex-col px-6 pt-10 flex-1 flex-shrink-0 flex-grow items-center justify-center'>
+			<div className='flex flex-col px-6 pt-10 flex-1 flex-shrink-0 flex-grow items-center justify-center'>
 				<Spinner size='lg' />
 			</div>
 		)
 	}
 
 	return (
-		<div className='relative max-w-lg w-full mx-auto flex flex-col px-6 pt-10 flex-1 flex-shrink-0 flex-grow'>
+		<div className='relative flex flex-col px-2 pt-4 flex-1 flex-shrink-0 flex-grow'>
 			<div className='flex-1'>
 				<div className='grid gap-4 mb-8'>
 					<UsernameForm />
